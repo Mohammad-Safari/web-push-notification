@@ -13,6 +13,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<modules>
+		<module>client-module</module>
 		<module>web-module</module>
 		<module>business-module</module>
 	</modules>
