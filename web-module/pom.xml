@@ -12,6 +12,11 @@
     <dependencies>
         <dependency>
             <groupId>com.my.mvc.project</groupId>
+            <artifactId>client-module</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.my.mvc.project</groupId>
             <artifactId>business-module</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
