@@ -1,0 +1,2 @@
+insert into users (ID,CREATED_TIME,UPDATED_TIME,USER_TYPE) values (-1,'2022-10-18 19:16:22.537','2022-10-18 19:16:22.537','admin'); 
+insert into user_details (USER_NAME,PASSWORD,EMAIL,DATE_OF_BIRTH) values ('admin','admin','admin@admin','2022-10-18 19:16:22.537'); 

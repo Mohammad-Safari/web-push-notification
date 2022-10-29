@@ -6,7 +6,7 @@
     <property name="CLASS_NAME_LENGTH" value="40" />
 
     <property name="LOGPATH" scope="context"
-        value="./log/project/project.log" />
+        value="/var/log/project/project.log" />
 
     <property name="PATTERN" scope="context"
         value="%date{yyyy-MM-dd'T'HH}:%cyan(%date{mm:ss}).%date{SSS} %boldWhite(%highlight(%-7.7level)) requestId:[%white(%-5.5mdc{requestId})] thread:[%white(%-8.8(%thread))] clientIP:[%white(%-10.10mdc{clientIP})] %boldMagenta(%-70.70(%logger{${CLASS_NAME_LENGTH}}.%method%green(@%line))):%n    %yellow(%message) %red(%rootException{${STACK_TRACE_COUNT}}) %n" />
