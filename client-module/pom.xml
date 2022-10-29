@@ -16,7 +16,6 @@
         <resources>
             <resource>
                 <directory>${angular.app.path}/dist</directory>
-                <targetPath>resources/</targetPath>
             </resource>
         </resources>
         <plugins>
@@ -80,7 +79,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/resources</outputDirectory>
+                            <outputDirectory>${project.build.outputDirectory}/</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${angular.app.path}/dist</directory>

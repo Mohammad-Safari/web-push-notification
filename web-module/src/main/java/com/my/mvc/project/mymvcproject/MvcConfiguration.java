@@ -16,5 +16,9 @@ public class MvcConfiguration implements WebMvcConfigurer {
                         "classpath:/public/",
                         "resources/",
                 });
+        registry.addResourceHandler("/app/**")
+                .addResourceLocations(new String[] {
+                        "classpath:/angular-app/",
+                });
     }
 }
