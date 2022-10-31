@@ -27,7 +27,7 @@ public class IndexController {
 
     }
 
-    @RequestMapping(path = { "/app", "/app/index**" }, method = RequestMethod.GET)
+    @RequestMapping(path = { "/app", "/app/index" }, method = RequestMethod.GET)
     public ModelAndView indexApp(HttpServletResponse response, HttpServletRequest request) {
         var mav = new ModelAndView("forward:/app/index.html");
         if (!cookieUtil.CookieCheck(request.getCookies())) {
@@ -36,4 +36,4 @@ public class IndexController {
         return mav;
 
     }
-}
+} 
