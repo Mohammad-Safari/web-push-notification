@@ -12,7 +12,7 @@ import com.my.mvc.project.mymvcproject.dto.SignupDto;
 import lombok.AllArgsConstructor;
 
 @RestController()
-@RequestMapping("/login")
+@RequestMapping("/api")
 @AllArgsConstructor
 public class AuthController {
 
