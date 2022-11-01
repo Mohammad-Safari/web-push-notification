@@ -16,10 +16,11 @@ public class UserDetailsService {
     private UserRepository userRepo;
 
     public UserDetails loadUserByUsername(String email) throws Exception {
-        Optional<User> userRes = userRepo.findByEmail(email);
-        if (userRes.isEmpty())
-            throw new Exception("Could not findUser with email = " + email);
-        User user = userRes.get();
-        return user.getDetails();
+        // Optional<User> userRes = userRepo.findByEmail(email);
+        // if (userRes.isEmpty())
+        //     throw new Exception("Could not findUser with email = " + email);
+        // User user = userRes.get();
+        // return user.getDetails();
+        return new UserDetails();
     }
 }

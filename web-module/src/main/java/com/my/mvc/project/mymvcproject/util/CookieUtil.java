@@ -23,26 +23,26 @@ import lombok.AllArgsConstructor;
 @Component
 public class CookieUtil {
     private UserService service;
-    @Value("${jwt_secret}")
-    private String secret = "jdkjhgkdghdfkgjdkgjhkd";
+    // @Value("${jwt_secret}")
+    // private String secret = "jdkjhgkdghdfkgjdkgjhkd";
 
-    public String generateToken(String email) throws IllegalArgumentException, JWTCreationException {
-        return JWT.create()
-                .withSubject("User Details")
-                .withClaim("email", email)
-                .withIssuedAt(new Date())
-                .withIssuer("Spring MVC Project")
-                .sign(Algorithm.HMAC256(secret));
-    }
+    // public String generateToken(String email) throws IllegalArgumentException, JWTCreationException {
+    //     return JWT.create()
+    //             .withSubject("User Details")
+    //             .withClaim("email", email)
+    //             .withIssuedAt(new Date())
+    //             .withIssuer("Spring MVC Project")
+    //             .sign(Algorithm.HMAC256(secret));
+    // }
 
-    public String validateTokenAndRetrieveSubject(String token) throws JWTVerificationException {
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
-                .withSubject("User Details")
-                .withIssuer("Spring MVC Project")
-                .build();
-        DecodedJWT jwt = verifier.verify(token);
-        return jwt.getClaim("email").asString();
-    }
+    // public String validateTokenAndRetrieveSubject(String token) throws JWTVerificationException {
+    //     JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
+    //             .withSubject("User Details")
+    //             .withIssuer("Spring MVC Project")
+    //             .build();
+    //     DecodedJWT jwt = verifier.verify(token);
+    //     return jwt.getClaim("email").asString();
+    // }
 
     public boolean CookieCheck(Cookie[] cookies) {
         if (cookies != null) {
