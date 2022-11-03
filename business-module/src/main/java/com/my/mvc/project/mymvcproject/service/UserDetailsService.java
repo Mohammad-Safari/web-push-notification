@@ -1,12 +1,9 @@
 package com.my.mvc.project.mymvcproject.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.my.mvc.project.mymvcproject.data.repository.UserRepository;
-import com.my.mvc.project.mymvcproject.model.User;
 import com.my.mvc.project.mymvcproject.model.UserDetails;
 
 @Component

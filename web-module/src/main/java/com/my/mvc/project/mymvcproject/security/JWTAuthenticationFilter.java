@@ -1,4 +1,4 @@
-package com.my.mvc.project.mymvcproject.filter;
+package com.my.mvc.project.mymvcproject.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,13 +29,11 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         try {
-            LoginDto login = new ObjectMapper()
-                    .readValue(request.getInputStream(), LoginDto.class);
-            return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            login.getUsername(),
-                            login.getPassword(),
-                            new ArrayList<>()));
+            LoginDto login = new ObjectMapper().readValue(request.getInputStream(), LoginDto.class);
+            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    login.getUsername(),
+                    login.getPassword(),
+                    new ArrayList<>()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -51,12 +49,4 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(AuthenticationConfigConstants.HEADER_STRING,
                 AuthenticationConfigConstants.TOKEN_PREFIX + token);
     }
-}
-
-class AuthenticationConfigConstants {
-    public static final String SECRET = "Java_to_Dev_Secret";
-    public static final long EXPIRATION_TIME = 864000000; // 10 days
-    public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String HEADER_STRING = "Authorization";
-    public static final String SIGN_UP_URL = "/api/user";
 }
