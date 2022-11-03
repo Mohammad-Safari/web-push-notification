@@ -20,7 +20,7 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.my.mvc.project.mymvcproject.model.User user = userService.readUserByUsername(username);
+        com.my.mvc.project.mymvcproject.model.User user = userService.loadUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
