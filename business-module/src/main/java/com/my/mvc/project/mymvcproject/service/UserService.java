@@ -39,4 +39,11 @@ public class UserService {
     public boolean validateId(long id) {
         return userRepository.existsById(id);
     }
+
+    public User readUserByUsername(String username) {
+        return null;
+    }
+
+    public void signup(SignupDto signupDto) {
+    }
 }
