@@ -1,4 +1,6 @@
-POST http://localhost:8080/login/login HTTP/1.1
-Content-Type:application/x-www-form-urlencoded
+POST http://localhost:8080/api/signup HTTP/1.1
+Content-Type:application/json
+authorization: CUSTOM-AUTH eyJ1c2VybmFtZSI6ImFzZCIsImVtYWlsIjpudWxsfQ==
 
-username=asd&password=asd
+
+{"username":"asd","password":"asd"}

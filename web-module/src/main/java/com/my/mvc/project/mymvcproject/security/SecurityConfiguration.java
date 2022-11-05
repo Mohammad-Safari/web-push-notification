@@ -16,24 +16,24 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final AuthenticationUserDetailService authenticationUserDetailService;
+    // private final AuthenticationUserDetailService authenticationUserDetailService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.POST, AuthenticationConfigConstants.SIGN_UP_URL).permitAll()
-                .antMatchers("/api/**").authenticated()
-                // .anyRequest().permitAll() 
+                // .antMatchers(HttpMethod.POST, AuthenticationConfigConstants.SIGN_UP_URL).permitAll()
+                // .antMatchers("/api/**").authenticated()
+                .anyRequest().permitAll() 
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                // .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+                // .addFilter(new JWTAuthorizationFilter(authenticationManager()))
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(authenticationUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
+        // auth.userDetailsService(authenticationUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
     // @Bean

@@ -10,6 +10,12 @@
     <name>web-module</name>
     <packaging>jar</packaging>
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.my.mvc.project</groupId>
             <artifactId>client-module</artifactId>
