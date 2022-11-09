@@ -1,0 +1,13 @@
+#container {
+    display: grid;
+}
+#list
+{
+    grid-row: 1;
+    grid-column: 1;
+}
+#list2
+{
+    grid-row: 1;
+    grid-column: 2;
+}
