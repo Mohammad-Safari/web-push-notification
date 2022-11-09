@@ -2,14 +2,17 @@ package com.my.mvc.project.mymvcproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.my.mvc.project.mymvcproject.data.repository.UserRepository;
 import com.my.mvc.project.mymvcproject.model.UserDetails;
 
-@Component
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
 public class UserDetailsService {
 
-    @Autowired
     private UserRepository userRepo;
 
     public UserDetails loadUserByUsername(String email) throws Exception {

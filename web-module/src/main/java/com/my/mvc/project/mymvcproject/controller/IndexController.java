@@ -34,6 +34,5 @@ public class IndexController {
             cookieUtil.configureCookie(response::addCookie);
         }
         return mav;
-
     }
-} 
+}

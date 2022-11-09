@@ -2,6 +2,7 @@ package com.my.mvc.project.mymvcproject.controller.api;
 
 import java.util.Base64;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.my.mvc.project.mymvcproject.context.UserContext;
+import com.my.mvc.project.mymvcproject.context.AppContext;
 import com.my.mvc.project.mymvcproject.dto.LoginDto;
 import com.my.mvc.project.mymvcproject.dto.SignupDto;
 import com.my.mvc.project.mymvcproject.filter.ContextConstants;
@@ -25,28 +26,39 @@ import lombok.SneakyThrows;
 @RequestMapping("/api")
 @AllArgsConstructor
 public class AuthController {
+    AppContext appContext;
     UserService userService;
     UserDetailsService detailsService;
 
     @PostMapping("/login")
     @SneakyThrows
-    public String login(@RequestBody LoginDto loginDto, HttpServletResponse response, UserContext userContext) {
-        userContext.setUsername(loginDto.getUsername());
-        var a = new ObjectMapper().writeValueAsString(userContext);
-        response.setHeader(ContextConstants.AUTHORIZATION_HEADER_NAME,
-                ContextConstants.AUTHORIZATION_HEADER_TYPE + " " + Base64.getEncoder().encodeToString(a.getBytes()));
-        return "";
+    public Object login(@RequestBody LoginDto loginDto,
+            HttpServletRequest request, HttpServletResponse response) {
+        if (request.getHeader(ContextConstants.AUTHORIZATION_HEADER_NAME) != null) {
+            appContext.getUserContext().setUsername(loginDto.getUsername());
+            var a = new ObjectMapper().writeValueAsString(appContext.getUserContext());
+            response.setHeader(ContextConstants.AUTHORIZATION_HEADER_NAME,
+                    ContextConstants.AUTHORIZATION_HEADER_TYPE + " "
+                            + Base64.getEncoder().encodeToString(a.getBytes()));
+        }
+        return new Object() {
+            String state = "Success";
+        };
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestBody SignupDto signupDto) {
+    public Object signup(@RequestBody SignupDto signupDto) {
         userService.signup(signupDto);
-        return "";
+        return new Object() {
+            String state = "Success";
+        };
     }
 
     @PostMapping("/logout")
     @ResponseBody
-    public String logout() {
-        return "";
+    public Object logout() {
+        return new Object() {
+            String state = "Success";
+        };
     }
 }
