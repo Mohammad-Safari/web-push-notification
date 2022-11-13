@@ -14,7 +14,6 @@ import com.my.mvc.project.mymvcproject.service.UserService;
 import lombok.AllArgsConstructor;
 
 @RestController
-// @Scope("request")
 @AllArgsConstructor
 @RequestMapping("/api")
 public class EventController {
