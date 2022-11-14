@@ -1,6 +1,5 @@
 package com.my.mvc.project.mymvcproject.service;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
@@ -25,43 +24,41 @@ public class UserService {
     // @Cacheable(value = "id")
     public UserDetails getUserDetails(long id) throws UserNotValidException, UserNotRegisteredDetailsException {
         var userQuery = userRepository.findById(id);
-        if (!userQuery.isPresent()) {
-            throw new UserNotValidException();
+        var detailQuery = userDetailsRepository.findById(id);
+        if (detailQuery.isEmpty() || userQuery.isEmpty()) {
+            throw new UserNotRegisteredDetailsException();
         }
         var foundUser = userQuery.get();
+        var foundDetail = detailQuery.get();
         if (foundUser.getUserType() != UserType.USER) {
             throw new UserNotRegisteredDetailsException();
         }
-        return foundUser.getDetails();
+        return foundDetail;
     }
 
-    public User loadUserByUsername(String username) {
-        var user = new User();
-        user.setDetails(UserDetails.builder().userName(username).build());
-        var example = Example.of(user);
-        return userRepository.findOne(example).orElse(null);
+    public User getByUsername(String username) {
+        var userDetail = UserDetails.builder().username(username).build();
+        var example = Example.of(userDetail);
+        return userDetailsRepository.findOne(example).orElse(null).getUser();
     }
 
-    public User loadUserByUsername2(String username) {
-        return userRepository.findByUserName(username).get(0);
-    }
-
-    public User loadUserByUsername3(String username) {
-        return userRepository.findByDetails(UserDetails.builder().userName(username).build()).get(0);
+    public User getByUsername2(String username) {
+        var det = userDetailsRepository.findByUsername(username).get(0);
+        return det.getUser();
     }
 
     public void signup(SignupDto signupDto) {
         userDetailsRepository.save(UserDetails.builder()
-                .userName(signupDto.getUsername())
+                .username(signupDto.getUsername())
                 .password(signupDto.getPassword())
                 .build());
     }
-    
+
     public boolean login(LoginDto loginDto) {
         var det = UserDetails.builder()
-        .userName(loginDto.getUsername())
-        .password(loginDto.getPassword())
-        .build();
+                .username(loginDto.getUsername())
+                .password(loginDto.getPassword())
+                .build();
         return userDetailsRepository.exists(Example.of(det));
     }
 

@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,12 +18,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDetails {
+    @OneToOne
+    @JoinColumn(name = "id")
+    private User user;
     @Id
-    private String userName;
+    private String username;
     private String password;
     private String email;
     private String firstName;
-    private String lastName;
+    private String lastname;
     private String address;
     private String phone;
     private Date dateOfBirth;
