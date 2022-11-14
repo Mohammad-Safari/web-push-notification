@@ -19,5 +19,8 @@ public class PushNotificationController {
 
     @GetMapping("/notification/subscribe")
     public SseEmitter subscribeNotifications() {
-        return eventListenerComponent.addEmitter(context);
-    }}
+        SseEmitter emitter = eventListenerComponent.addEmitter(context);
+        eventListenerComponent.retrieveQueuedEvents(context);
+        return emitter;
+    }
+}

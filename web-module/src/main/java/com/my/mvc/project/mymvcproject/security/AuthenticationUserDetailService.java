@@ -2,7 +2,6 @@ package com.my.mvc.project.mymvcproject.security;
 
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,16 +16,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationUserDetailService implements UserDetailsService {
     private final UserService userService;
+    private final com.my.mvc.project.mymvcproject.service.UserDetailsService detService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.my.mvc.project.mymvcproject.model.User user = userService.loadUserByUsername(username);
+        com.my.mvc.project.mymvcproject.model.User user = userService.getByUsername2(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        com.my.mvc.project.mymvcproject.model.UserDetails userDetail = user.getDetails();
-        return new User(userDetail.getUserName(),
-                userDetail.getPassword(),
-                Collections.emptyList());
+        com.my.mvc.project.mymvcproject.model.UserDetails userDetail;
+        try {
+            userDetail = detService.loadUserByUsername(username);
+            return new User(userDetail.getUsername(),
+                    userDetail.getPassword(),
+                    Collections.emptyList());
+        } catch (Exception e) {
+            throw new UsernameNotFoundException(username);
+        }
     }
 }
