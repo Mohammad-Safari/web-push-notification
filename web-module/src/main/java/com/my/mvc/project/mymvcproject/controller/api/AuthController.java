@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.my.mvc.project.mymvcproject.context.AppContext;
+import com.my.mvc.project.mymvcproject.context.RequestContext;
 import com.my.mvc.project.mymvcproject.dto.LoginDto;
 import com.my.mvc.project.mymvcproject.dto.SignupDto;
 import com.my.mvc.project.mymvcproject.filter.ContextConstants;
@@ -26,7 +26,7 @@ import lombok.SneakyThrows;
 @RequestMapping("/api")
 @AllArgsConstructor
 public class AuthController {
-    AppContext appContext;
+    RequestContext appContext;
     UserService userService;
     UserDetailsService detailsService;
 

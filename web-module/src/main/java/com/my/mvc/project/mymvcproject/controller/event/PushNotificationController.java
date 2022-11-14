@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.my.mvc.project.mymvcproject.context.RequestContext;
 import com.my.mvc.project.mymvcproject.listener.EventListenerComponent;
 
 import lombok.AllArgsConstructor;
@@ -13,9 +14,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @RequestMapping("/event")
 public class PushNotificationController {
+    private RequestContext context;
     private EventListenerComponent eventListenerComponent;
 
     @GetMapping("/notification/subscribe")
     public SseEmitter subscribeNotifications() {
-        return eventListenerComponent.getEmitter();
+        return eventListenerComponent.addEmitter(context);
     }}

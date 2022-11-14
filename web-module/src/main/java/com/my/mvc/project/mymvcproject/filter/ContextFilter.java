@@ -10,22 +10,21 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.mvc.project.mymvcproject.context.ActionContext;
-import com.my.mvc.project.mymvcproject.context.AppContext;
+import com.my.mvc.project.mymvcproject.context.RequestContext;
 import com.my.mvc.project.mymvcproject.context.UserContext;
 
 import lombok.AllArgsConstructor;
 
 @Component
-@Order(0)
 @AllArgsConstructor
+@Order(0)
 public class ContextFilter extends OncePerRequestFilter {
-    private AppContext appContext;
-    private UserContext userContext;
-    private ActionContext actionContext;
+    private RequestContext reqContext;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -39,9 +38,9 @@ public class ContextFilter extends OncePerRequestFilter {
             var requestContext = new ObjectMapper().readValue(
                     Base64.getDecoder().decode(authorization.substring(startIndex)),
                     UserContext.class);
-            userContext.setUsername(requestContext.getUsername());
-            userContext.setEmail(requestContext.getEmail());
-            actionContext.setName(request.getHeader(ContextConstants.ACTION_HEADER_NAME));
+            reqContext.getUserContext().setUsername(requestContext.getUsername());
+            reqContext.getUserContext().setEmail(requestContext.getEmail());
+            reqContext.getActionContext().setName(request.getHeader(ContextConstants.ACTION_HEADER_NAME));
         }
         filterChain.doFilter(request, response);
     }
@@ -49,6 +48,7 @@ public class ContextFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
-        return !requestURI.startsWith("/api") || requestURI.startsWith("/api/login");
+        return !requestURI.startsWith("/api") && !requestURI.startsWith("/event")
+                || (requestURI.startsWith("/api/login") || requestURI.startsWith("/api/signup"));
     }
 }
