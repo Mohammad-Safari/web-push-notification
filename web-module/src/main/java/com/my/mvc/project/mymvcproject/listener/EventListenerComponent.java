@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -15,7 +13,6 @@ import com.my.mvc.project.mymvcproject.context.RequestContext;
 import com.my.mvc.project.mymvcproject.model.Event;
 import com.my.mvc.project.mymvcproject.service.UserService;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +29,7 @@ public class EventListenerComponent {
     public SseEmitter addEmitter(RequestContext reqContext) {
         log.info("creating emitter..");
         var emitter = context.getBean(SseEmitter.class);
-        var userId = userService.lodaUserByUserName(reqContext.getUserContext().getUsername()).getId();
+        var userId = userService.getByUsername2(reqContext.getUserContext().getUsername()).getId();
         var emitterList = emitters.getOrDefault(userId, new ArrayList<>());
         if (!emitters.containsKey(userId)) {
             emitters.put(userId, emitterList);
@@ -65,5 +62,6 @@ public class EventListenerComponent {
         var emitterList = emitters.getOrDefault(userId, new ArrayList<>());
         for (SseEmitter emitter : emitterList) {
             emitter.send(sseEvent);
+        }
     }
 }

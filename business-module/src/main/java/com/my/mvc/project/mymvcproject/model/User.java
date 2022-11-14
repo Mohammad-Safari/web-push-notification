@@ -9,8 +9,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.my.mvc.project.mymvcproject.enums.UserType;
@@ -32,7 +30,4 @@ public class User {
   private Date updatedTime;
   @Enumerated(EnumType.STRING)
   private UserType userType;
-  @OneToOne
-  @JoinColumn(name = "username")
-  private UserDetails details;
 }

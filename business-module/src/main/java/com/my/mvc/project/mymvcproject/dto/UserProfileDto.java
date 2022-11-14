@@ -1,8 +1,13 @@
 package com.my.mvc.project.mymvcproject.dto;
 
-import com.my.mvc.project.mymvcproject.model.UserDetails;
+import lombok.Data;
 
+@Data
 public class UserProfileDto {
-    public UserProfileDto(UserDetails details) {
-    }
+    private String username;
+    private String email;
+    private String firstName;
+    private String lastname;
+    private String address;
+    private String phone;
 }
