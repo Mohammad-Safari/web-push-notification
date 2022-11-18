@@ -3,5 +3,5 @@ export class EventModel {
   receiver: string;
   data: string;
   id: string;
-  type: string = "notification";
+  type: string = "server-notification";
 }
