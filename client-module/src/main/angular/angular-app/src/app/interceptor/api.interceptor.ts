@@ -1,33 +1,33 @@
-import { Injectable } from '@angular/core';
 import {
-  HttpRequest,
-  HttpHandler,
   HttpEvent,
+  HttpHandler,
   HttpInterceptor,
+  HttpRequest,
 } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class ApiInterceptorInterceptor implements HttpInterceptor {
+export class ApiInterceptor implements HttpInterceptor {
   constructor() {}
 
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
+    let authenticatedRequest = request;
     if (
       request.url.startsWith('/api/') &&
-      !request.url.startsWith('/api/login') &&
-      !request.url.startsWith('/api/signup') &&
+      (!request.url.startsWith('/api/login') &&
+        !request.url.startsWith('/api/signup')) &&
       localStorage.getItem('Authorization') != null
     ) {
-      request = request.clone({
+      authenticatedRequest = request.clone({
         setHeaders: {
-          ...request.headers,
           Authorization: localStorage.getItem('Authorization') ?? '',
         },
       });
     }
-    return next.handle(request);
+    return next.handle(authenticatedRequest);
   }
 }

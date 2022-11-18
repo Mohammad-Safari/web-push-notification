@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { LoginModel } from 'src/app/model/login-model';
-import { LoginServiceService } from 'src/app/service/login-service.service';
+import { LoginService } from 'src/app/service/login/login.service';
 
 @Component({
   selector: 'app-login',
@@ -9,10 +10,16 @@ import { LoginServiceService } from 'src/app/service/login-service.service';
 })
 export class LoginComponent implements OnInit {
   public loginModel: LoginModel = new LoginModel();
-  constructor(private loginService: LoginServiceService) {}
+
+  constructor(private loginService: LoginService, private router: Router) {}
 
   ngOnInit(): void {}
+  
   onSubmit() {
-    this.loginService.login(this.loginModel);
+    this.loginService.login(this.loginModel).subscribe({
+      next: () => {
+        this.router.navigate(['/notification']);
+      },
+    });
   }
 }
