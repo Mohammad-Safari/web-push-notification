@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LoginModel } from '../model/login-model';
+import { map } from 'rxjs/operators';
+import { LoginModel } from '../../model/login-model';
 
 @Injectable({
   providedIn: 'root',
@@ -8,15 +9,15 @@ import { LoginModel } from '../model/login-model';
 export class LoginService {
   constructor(private httpClient: HttpClient) {}
   login(loginModel: LoginModel) {
-    this.httpClient
+    return this.httpClient
       .post('/api/login', loginModel, { observe: 'response' })
-      .subscribe({
-        next: (data) => {
+      .pipe(
+        map((data: HttpResponse<any>) => {
           localStorage.setItem(
             'Authorization',
             data.headers.get('Authorization') ?? ''
           );
-        },
-      });
+        })
+      );
   }
 }

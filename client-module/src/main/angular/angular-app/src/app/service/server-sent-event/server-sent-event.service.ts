@@ -1,15 +1,22 @@
-import { Inject, Injectable, NgZone } from '@angular/core';
+import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { Observable } from 'rxjs';
+import { NotificationModel } from 'src/app/model/notification';
 
 type SseEmitter = {
   next: (messageEvent: MessageEvent<any>) => void;
   error: (messageEvent: Event) => void;
 };
 
+export const EVENT_SERVER_URL = new InjectionToken<string>('EVENT_SERVER_URL', {
+  providedIn: 'root',
+  factory: () => '/event/notification/subscribe',
+});
+
 @Injectable({
   providedIn: 'root',
 })
-export class SseService {
+export class ServerSentEventService {
   private _sseEventSource: EventSource;
   private _genericObservable: Observable<any>;
   private _observables: Map<string, Observable<MessageEvent>> = new Map();
@@ -19,9 +26,13 @@ export class SseService {
 
   constructor(
     private zone: NgZone,
-    @Inject('EVENT_SERVER_URL') private eventServerUrl: string
+    @Inject(EVENT_SERVER_URL) private eventServerUrl: string
   ) {
-    this._sseEventSource = new EventSource(eventServerUrl);
+    this._sseEventSource = new EventSourcePolyfill(eventServerUrl, {
+      headers: {
+        Authorization: localStorage.getItem('Authorization') ?? '',
+      },
+    });
     this._genericObservable = this.initEventObserver(this._sseEventSource);
   }
 
@@ -41,7 +52,9 @@ export class SseService {
     };
   };
 
-  private initEventObserver(sseEventSource: EventSource): Observable<MessageEvent> {
+  private initEventObserver(
+    sseEventSource: EventSource
+  ): Observable<MessageEvent> {
     const onmessage = this.zoneRunnerFn;
     const onerror = this.zoneErrorFn;
     const emitter = (observer: SseEmitter) => {
@@ -51,27 +64,28 @@ export class SseService {
     return new Observable(emitter);
   }
 
-  private _getEventObservable(eventType: string): Observable<MessageEvent> {
+  private getEventObservable(eventType: string): Observable<MessageEvent> {
     const onevent = this.zoneRunnerFn;
     const emitter = (observer: SseEmitter) => {
-      this._sseEventSource.addEventListener(eventType, onevent(observer));
+      const handler = onevent(observer);
+      this._sseEventSource.addEventListener(eventType, handler as any);
     };
     return new Observable(emitter);
   }
 
-  public getEventObservable(
+  public get(
     eventType: string,
     options: { ignoreExsiting: boolean } = { ignoreExsiting: false }
   ): Observable<MessageEvent> {
     if (options.ignoreExsiting === true && this._observables.has(eventType)) {
       return this._observables.get(eventType)!;
     }
-    const observable = this._getEventObservable(eventType);
+    const observable = this.getEventObservable(eventType);
     this._observables.set(eventType, observable);
     return observable;
   }
 
-  public closeEventService(){
+  public closeEventService() {
     this._sseEventSource.close();
     this._observables.clear();
   }
