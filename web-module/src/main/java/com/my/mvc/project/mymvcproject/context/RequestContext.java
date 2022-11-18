@@ -1,17 +1,23 @@
 package com.my.mvc.project.mymvcproject.context;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @Component
-@RequestScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 @AllArgsConstructor
-public class RequestContext {
+class RequestContextImp implements RequestContext {
     private UserContext userContext;
     private ActionContext actionContext;
+}
+
+public interface RequestContext {
+    public UserContext getUserContext();
+
+    public ActionContext getActionContext();
 }

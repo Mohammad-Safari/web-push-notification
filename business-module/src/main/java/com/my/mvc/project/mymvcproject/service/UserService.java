@@ -48,7 +48,10 @@ public class UserService {
     }
 
     public void signup(SignupDto signupDto) {
+        User user = User.builder().userType(UserType.USER).build();
+        userRepository.save(user);
         userDetailsRepository.save(UserDetails.builder()
+                .user(user)
                 .username(signupDto.getUsername())
                 .password(signupDto.getPassword())
                 .build());

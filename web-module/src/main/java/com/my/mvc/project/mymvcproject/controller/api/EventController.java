@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.my.mvc.project.mymvcproject.context.RequestContext;
 import com.my.mvc.project.mymvcproject.dto.EventDto;
 import com.my.mvc.project.mymvcproject.model.Event;
 import com.my.mvc.project.mymvcproject.service.EventService;
@@ -18,11 +19,12 @@ import lombok.AllArgsConstructor;
 public class EventController {
     UserService userService;
     EventService eventService;
+    RequestContext requestContext;
 
     @PostMapping("/notification/publish")
     public void publishNotification(@RequestBody EventDto eventDto) {
         Event event = Event.builder()
-                .sender(userService.getByUsername2(eventDto.getSender()))
+                .sender(userService.getByUsername2(requestContext.getUserContext().getUsername()))
                 .receiver(userService.getByUsername2(eventDto.getReceiver()))
                 .data(eventDto.getData())
                 .id(eventDto.getId())

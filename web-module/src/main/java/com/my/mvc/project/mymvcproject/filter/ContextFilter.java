@@ -10,11 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.my.mvc.project.mymvcproject.context.ActionContext;
 import com.my.mvc.project.mymvcproject.context.RequestContext;
 import com.my.mvc.project.mymvcproject.context.UserContext;
 
@@ -35,9 +33,8 @@ public class ContextFilter extends OncePerRequestFilter {
             // request.getRequestDispatcher("/error").forward(request, response);
         } else {
             var startIndex = ContextConstants.AUTHORIZATION_HEADER_TYPE.length() + 1;
-            var requestContext = new ObjectMapper().readValue(
-                    Base64.getDecoder().decode(authorization.substring(startIndex)),
-                    UserContext.class);
+            var jsonToken = new String(Base64.getDecoder().decode(authorization.substring(startIndex)));
+            var requestContext = new ObjectMapper().readValue(jsonToken, UserContext.class);
             reqContext.getUserContext().setUsername(requestContext.getUsername());
             reqContext.getUserContext().setEmail(requestContext.getEmail());
             reqContext.getActionContext().setName(request.getHeader(ContextConstants.ACTION_HEADER_NAME));
