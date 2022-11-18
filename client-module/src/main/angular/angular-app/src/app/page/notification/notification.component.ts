@@ -18,9 +18,12 @@ import { ServerSentEventService } from 'src/app/service/server-sent-event/server
 })
 export class NotificationComponent implements OnInit {
   public eventModel = new EventModel();
+  public pushSupport: boolean;
+  public pushGranted: boolean;
+  public pushEnabled = false;
   @ViewChild('notificationSubscriber')
   subscriberContainer: ElementRef<HTMLDivElement>;
-  @ViewChild('notificationSpublisher')
+  @ViewChild('notificationPublisher')
   publisherContainer: ElementRef<HTMLDivElement>;
   private _subscribed: boolean = true;
 
@@ -31,8 +34,9 @@ export class NotificationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.pushSupport = 'Notification' in window;
     this.serverSentEventService
-      .get('notification')
+      .get('server-notification')
       .pipe(
         takeWhile(() => this._subscribed),
         map(
@@ -40,14 +44,17 @@ export class NotificationComponent implements OnInit {
             new NotificationModel(
               message.data,
               (message as any).id,
-              'notification'
+              'server-notification'
             )
         )
       )
       .subscribe((notification) => {
         if (notification) {
           this.renderNotification(notification);
+          if (this.pushEnabled) {
+            ServerSentEventService.webPushApiTrigger(notification);
           }
+        }
       });
   }
 
@@ -55,15 +62,21 @@ export class NotificationComponent implements OnInit {
     this.notificationService.publish(this.eventModel).subscribe({
       next: () => {
         let div = this.renderer.createElement('div');
-        let text = this.renderer.createText('Published');
-        this.renderer.appendChild(this.publisherContainer.nativeElement, text);
+        this.renderer.addClass(div,'message-box');
+        let text = this.renderer.createText('Event is being send to Server');
+        this.renderer.appendChild(div, text);
         this.renderer.appendChild(this.publisherContainer.nativeElement, div);
         setTimeout(() => {
           this.renderer.removeChild(
             this.publisherContainer.nativeElement,
-            text
+            div
           );
         }, 1000);
+      },
+      complete: () => {
+        this.renderNotification(
+          new NotificationModel('Event Published By Server', '0', 'app-notification', 700)
+        );
       },
     });
   }
@@ -72,7 +85,7 @@ export class NotificationComponent implements OnInit {
     let notificationBox = this.renderer.createElement('div');
     let header = this.renderer.createElement('b');
     let content = this.renderer.createElement('div');
-    const NOTIFICATION_TYPE = 'notification';
+    const NOTIFICATION_TYPE = notification.type ?? 'server-notification';
     const boxColorClass = NOTIFICATION_TYPE;
     let classesToAdd = ['message-box', boxColorClass];
     classesToAdd.forEach((x) => this.renderer.addClass(notificationBox, x));
@@ -112,4 +125,13 @@ export class NotificationComponent implements OnInit {
     this.serverSentEventService.closeEventService();
   }
 
+  toggleWebPush() {
+    if (!this.pushEnabled && !this.pushGranted) {
+      ServerSentEventService.reauestPermission().then((permission) => {
+        this.pushGranted = this.pushEnabled = permission;
+      });
+    } else {
+      this.pushEnabled = !this.pushEnabled;
+    }
   }
+}

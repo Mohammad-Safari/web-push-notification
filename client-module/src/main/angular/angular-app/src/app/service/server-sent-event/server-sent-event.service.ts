@@ -89,4 +89,32 @@ export class ServerSentEventService {
     this._sseEventSource.close();
     this._observables.clear();
   }
+
+  /**
+   * Html5 Web Push API Permission Utility
+   * @param notification
+   */
+  static async reauestPermission(): Promise<boolean> {
+    let permitted = false;
+    permitted = await Notification.requestPermission().then((permission) => {
+      return permission === 'granted' ? true : false;
+    });
+    return permitted;
+  }
+
+  /**
+   * Html5 Web Push API publisher Utility
+   * @param notification
+   */
+  static async webPushApiTrigger(notification: NotificationModel) {
+    var standardNotification = new Notification('Notification', {
+      body: notification.data,
+      icon: 'favicon.ico',
+      dir: 'auto', // ltr/rtl
+    });
+    // optional - self destrcution
+    setTimeout(function () {
+      standardNotification.close();
+    }, notification.duration);
+  }
 }
