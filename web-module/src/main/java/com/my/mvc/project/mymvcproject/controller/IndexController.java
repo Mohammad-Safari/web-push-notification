@@ -27,9 +27,10 @@ public class IndexController {
 
     }
 
-    @RequestMapping(path = { "/app", "/app/index" }, method = RequestMethod.GET)
+    // second mapping is for resource/file exclusion
+    @RequestMapping(path = { "/app", "/app/{path:[^.]*}" }, method = RequestMethod.GET)
     public ModelAndView indexApp(HttpServletResponse response, HttpServletRequest request) {
-        var mav = new ModelAndView("forward:/app/index.html");
+        var mav = new ModelAndView("forward:/angular-app/index.html");
         if (!cookieUtil.CookieCheck(request.getCookies())) {
             cookieUtil.configureCookie(response::addCookie);
         }

@@ -17,13 +17,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // private final BCryptPasswordEncoder bCryptPasswordEncoder;
     // private final AuthenticationUserDetailService authenticationUserDetailService;
-
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // h2console
+        http.authorizeRequests().antMatchers("/h2-console/**").permitAll()
+                .and().headers().frameOptions().disable();
         http.cors().and().csrf().disable().authorizeRequests()
                 // .antMatchers(HttpMethod.POST, AuthenticationConfigConstants.SIGN_UP_URL).permitAll()
                 // .antMatchers("/api/**").authenticated()
-                .anyRequest().permitAll() 
+                .anyRequest().permitAll()
                 .and()
                 // .addFilter(new JWTAuthenticationFilter(authenticationManager()))
                 // .addFilter(new JWTAuthorizationFilter(authenticationManager()))

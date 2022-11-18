@@ -3,14 +3,14 @@ package com.my.mvc.project.mymvcproject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-// import org.springframework.session.web.http.DefaultCookieSerializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class MvcConfiguration implements WebMvcConfigurer {
@@ -24,7 +24,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
                                                 "classpath:/public/",
                                                 "resources/",
                                 });
-                registry.addResourceHandler("/app/**")
+                registry.addResourceHandler("/app/**", "/angular-app/**")
                                 .addResourceLocations(new String[] {
                                                 "classpath:/angular-app/",
                                 });
@@ -62,6 +62,11 @@ public class MvcConfiguration implements WebMvcConfigurer {
         @Scope(value = "prototype")
         public SseEmitter getSseEmitter() {
                 return new SseEmitter();
+        }
+
+        @Bean
+        public ObjectMapper getMapper() {
+                return new ObjectMapper();
         }
 
 }

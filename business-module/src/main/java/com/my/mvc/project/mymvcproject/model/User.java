@@ -14,12 +14,14 @@ import javax.persistence.Table;
 import com.my.mvc.project.mymvcproject.enums.UserType;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
