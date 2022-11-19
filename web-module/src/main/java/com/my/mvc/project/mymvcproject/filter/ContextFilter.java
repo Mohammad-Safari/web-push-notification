@@ -46,6 +46,7 @@ public class ContextFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestURI = request.getRequestURI();
         return !requestURI.startsWith("/api") && !requestURI.startsWith("/event")
-                || (requestURI.startsWith("/api/login") || requestURI.startsWith("/api/signup"));
+                || (requestURI.startsWith("/api/login") || requestURI.startsWith("/api/signup") 
+                || (requestURI.startsWith("/event/sse") || requestURI.startsWith("/event/rbe")));
     }
 }
