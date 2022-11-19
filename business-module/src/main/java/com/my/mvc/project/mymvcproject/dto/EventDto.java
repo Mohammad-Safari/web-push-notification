@@ -1,7 +1,5 @@
 package com.my.mvc.project.mymvcproject.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Data;
 
 @Data

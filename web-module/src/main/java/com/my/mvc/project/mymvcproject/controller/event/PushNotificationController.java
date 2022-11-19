@@ -22,6 +22,7 @@ public class PushNotificationController {
     @GetMapping(path = { "/notification/subscribe" }, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribeNotifications() {
         SseEmitter emitter = eventListenerComponent.addEmitter(context);
+        eventListenerComponent.informConnectionOpening(context);
         eventListenerComponent.retrieveQueuedEvents(context);
         return emitter;
     }
