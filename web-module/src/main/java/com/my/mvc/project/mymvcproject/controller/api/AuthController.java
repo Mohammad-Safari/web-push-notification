@@ -23,6 +23,7 @@ import com.my.mvc.project.mymvcproject.dto.SignupDto;
 import com.my.mvc.project.mymvcproject.filter.ContextConstants;
 import com.my.mvc.project.mymvcproject.service.UserDetailsService;
 import com.my.mvc.project.mymvcproject.service.UserService;
+import com.my.mvc.project.mymvcproject.util.CookieUtil;
 import com.my.mvc.project.mymvcproject.util.RawResponseDto;
 
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class AuthController {
     private UserDetailsService detailsService;
     private RequestContext reqContext;
     private UserService userService;
+    private CookieUtil cookieUtil;
     private ObjectMapper mapper;
 
     enum State {
@@ -60,6 +62,8 @@ public class AuthController {
         try {
             authorizationToken = authenticate(loginDto, tokenHolder.apply(ContextConstants.AUTHORIZATION_HEADER_NAME));
             response.setHeader(ContextConstants.AUTHORIZATION_HEADER_NAME, authorizationToken);
+            cookieUtil.set(response::addCookie, ContextConstants.AUTHORIZATION_HEADER_NAME, authorizationToken
+                    .substring(ContextConstants.AUTHORIZATION_HEADER_TYPE.length() + 1));
         } catch (Exception e) {
             authenticationState = State.ERROR_STATE_MESSAGE;
         }
@@ -92,7 +96,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public Object signup(@RequestBody SignupDto signupDto) {
+    public RawResponseDto signup(@RequestBody SignupDto signupDto) {
         userService.signup(signupDto);
         return new RawResponseDto(State.SUCCESS_STATE_MESSAGE.getState()) {
             String state;
@@ -106,7 +110,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     @ResponseBody
-    public Object logout() {
+    public RawResponseDto logout(HttpServletResponse response) {
+        cookieUtil.set(response::addCookie, ContextConstants.AUTHORIZATION_HEADER_NAME, "");
+        // invalidate token
         return new RawResponseDto(State.ERROR_STATE_MESSAGE.getState()) {
             String state;
 

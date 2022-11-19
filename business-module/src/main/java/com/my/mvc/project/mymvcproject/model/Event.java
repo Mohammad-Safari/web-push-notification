@@ -18,6 +18,6 @@ public class Event {
     @Id
     private String id;
     private String data;
-    private String type;
+    private String name;
 
 }

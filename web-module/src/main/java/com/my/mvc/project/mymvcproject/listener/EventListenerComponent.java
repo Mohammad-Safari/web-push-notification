@@ -1,6 +1,5 @@
 package com.my.mvc.project.mymvcproject.listener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +19,7 @@ import com.my.mvc.project.mymvcproject.service.UserService;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -30,17 +30,17 @@ public class EventListenerComponent {
     private final ApplicationContext context;
     private final UserService userService;
     private final SimpleAsyncTaskExecutor asyncTaskExecutor;
-    private ConcurrentHashMap<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Long, Queue<Event>> queues = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, List<SseEmitter>> emitters = new ConcurrentHashMap<>(); // online user emitters
+    private ConcurrentHashMap<Long, Long> integrityId = new ConcurrentHashMap<>(); // incremental id on event sent
+    private ConcurrentHashMap<Long, Queue<Event>> queues = new ConcurrentHashMap<>(); // queue for offline user
+                                                                                      // notification
 
     public SseEmitter addEmitter(RequestContext reqContext) {
         log.info("creating emitter...");
         var emitter = context.getBean(SseEmitter.class);
         var userId = userService.getByUsername2(reqContext.getUserContext().getUsername()).getId();
         var emitterList = emitters.getOrDefault(userId, Collections.synchronizedList(new ArrayList<>()));
-        if (!emitters.containsKey(userId)) {
-            emitters.put(userId, emitterList);
-        }
+        emitters.putIfAbsent(userId, emitterList);
         emitterList.add(emitter);
         emitter.onCompletion(() -> {
             log.info("emitter is being removed caused by completion...");
@@ -65,36 +65,35 @@ public class EventListenerComponent {
             while (!queue.isEmpty()) {
                 final var event = queue.poll();
                 asyncTaskExecutor.execute(() -> {
-                    try {
-                        handleEvent(event);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    handleEvent(event);
                 });
-
             }
         }
     }
 
     @EventListener(Event.class)
-    public void handleEvent(Event event) throws IOException {
+    @SneakyThrows
+    public void handleEvent(Event event) {
         log.warn("Handling event ...");
+        var userId = event.getReceiver().getId();
+        var id = integrityId.getOrDefault(userId, 0l);
+        var userEmitterList = emitters.getOrDefault(userId, Collections.synchronizedList(new ArrayList<>()));
+        if (userEmitterList.isEmpty()) {
+            log.warn("No emitters found for user with id: " + userId);
+            id = integrityId.put(userId, 0l);
+            var queue = queues.getOrDefault(userId, new LinkedBlockingQueue<>());
+            queues.putIfAbsent(userId, queue);
+            event.setId(String.valueOf(id));
+            queue.add(event);
+            return;
+        }
         var sseEvent = SseEmitter.event()
                 .data(event.getData())
                 .id(event.getData())
-                .name(event.getType());
-        var userId = event.getReceiver().getId();
-        var emitterList = emitters.getOrDefault(userId, Collections.synchronizedList(new ArrayList<>()));
-        if (emitterList.isEmpty()) {
-            log.warn("No emitters found for user with id: " + userId);
-            var queue = queues.getOrDefault(userId, new LinkedBlockingQueue<>());
-            if (!queues.containsKey(userId)) {
-                queues.put(userId, queue);
-            }
-            queue.add(event);
-        }
-        for (SseEmitter emitter : emitterList) {
+                .name(event.getName());
+        for (SseEmitter emitter : userEmitterList) {
             emitter.send(sseEvent);
         }
+        integrityId.put(userId, ++id);
     }
 }

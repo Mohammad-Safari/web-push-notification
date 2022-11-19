@@ -27,8 +27,7 @@ public class EventController {
                 .sender(userService.getByUsername2(requestContext.getUserContext().getUsername()))
                 .receiver(userService.getByUsername2(eventDto.getReceiver()))
                 .data(eventDto.getData())
-                .id(eventDto.getId())
-                .type(eventDto.getType()).build();
+                .name(eventDto.getName()).build();
         eventService.publishCustomEvent(event);
     }
 

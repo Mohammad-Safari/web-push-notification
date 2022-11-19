@@ -20,9 +20,6 @@ public class IndexController {
     @RequestMapping(path = { "/", "/index**" }, method = RequestMethod.GET)
     public ModelAndView index(HttpServletResponse response, HttpServletRequest request) {
         var mav = new ModelAndView("index");
-        if (!cookieUtil.CookieCheck(request.getCookies())) {
-            cookieUtil.configureCookie(response::addCookie);
-        }
         return mav;
 
     }
@@ -31,9 +28,6 @@ public class IndexController {
     @RequestMapping(path = { "/app", "/app/{path:[^.]*}" }, method = RequestMethod.GET)
     public ModelAndView indexApp(HttpServletResponse response, HttpServletRequest request) {
         var mav = new ModelAndView("forward:/angular-app/index.html");
-        if (!cookieUtil.CookieCheck(request.getCookies())) {
-            cookieUtil.configureCookie(response::addCookie);
-        }
         return mav;
     }
 }
