@@ -3,7 +3,7 @@ import {
   ElementRef,
   OnInit,
   Renderer2,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { map, takeWhile } from 'rxjs/operators';
 import { EventModel } from 'src/app/model/event-model';
@@ -85,9 +85,11 @@ export class NotificationComponent implements OnInit {
     let notificationBox = this.renderer.createElement('div');
     let header = this.renderer.createElement('b');
     let content = this.renderer.createElement('div');
-    const NOTIFICATION_TYPE = notification.type ?? 'server-notification';
+    const NOTIFICATION_TYPE = notification.event ?? 'server-notification';
     const boxColorClass = NOTIFICATION_TYPE;
     let classesToAdd = ['message-box', boxColorClass];
+    const headerText = this.renderer.createText(NOTIFICATION_TYPE);
+    const text = this.renderer.createText(notification.data);
     classesToAdd.forEach((x) => this.renderer.addClass(notificationBox, x));
     this.renderer.setStyle(
       notificationBox,
@@ -95,9 +97,7 @@ export class NotificationComponent implements OnInit {
       `opacity ${notification.duration}ms`
     );
     this.renderer.setStyle(notificationBox, 'opacity', '1');
-    const headerText = this.renderer.createText(NOTIFICATION_TYPE);
     this.renderer.appendChild(header, headerText);
-    const text = this.renderer.createText(notification.data);
     this.renderer.appendChild(content, text);
     this.renderer.appendChild(
       this.subscriberContainer.nativeElement,
@@ -105,10 +105,10 @@ export class NotificationComponent implements OnInit {
     );
     this.renderer.appendChild(notificationBox, header);
     this.renderer.appendChild(notificationBox, content);
-    this.removeEntry(notificationBox, notification);
+    this.schedEntryRemove(notificationBox, notification);
   }
 
-  private removeEntry(notificationBox: any, notification: NotificationModel) {
+  private schedEntryRemove(notificationBox: any, notification: NotificationModel) {
     setTimeout(() => {
       this.renderer.setStyle(notificationBox, 'opacity', '0');
       setTimeout(() => {

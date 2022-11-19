@@ -3,5 +3,9 @@ export class EventModel {
   receiver: string;
   data: string;
   id: string;
-  type: string = "server-notification";
+  name: string;
+  retry: number;
+  constructor(name?: string) {
+    this.name = name ?? 'server-notification';
+  }
 }

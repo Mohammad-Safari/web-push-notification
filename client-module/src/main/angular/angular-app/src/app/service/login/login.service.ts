@@ -15,7 +15,9 @@ export class LoginService {
         map((data: HttpResponse<any>) => {
           localStorage.setItem(
             'Authorization',
-            data.headers.get('Authorization') ?? ''
+            data.headers.get('Authorization') ??
+              data.body['Authorization'] ??
+              ''
           );
         })
       );

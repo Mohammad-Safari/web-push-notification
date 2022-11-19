@@ -1,5 +1,4 @@
 import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
-import { EventSourcePolyfill } from 'event-source-polyfill';
 import { Observable } from 'rxjs';
 import { NotificationModel } from 'src/app/model/notification';
 
@@ -28,10 +27,8 @@ export class ServerSentEventService {
     private zone: NgZone,
     @Inject(EVENT_SERVER_URL) private eventServerUrl: string
   ) {
-    this._sseEventSource = new EventSourcePolyfill(eventServerUrl, {
-      headers: {
-        Authorization: localStorage.getItem('Authorization') ?? '',
-      },
+    this._sseEventSource = new EventSource(eventServerUrl, {
+      withCredentials: true
     });
     this._genericObservable = this.initEventObserver(this._sseEventSource);
   }
@@ -74,14 +71,14 @@ export class ServerSentEventService {
   }
 
   public get(
-    eventType: string,
+    eventName: string,
     options: { ignoreExsiting: boolean } = { ignoreExsiting: false }
   ): Observable<MessageEvent> {
-    if (options.ignoreExsiting === true && this._observables.has(eventType)) {
-      return this._observables.get(eventType)!;
+    if (options.ignoreExsiting === true && this._observables.has(eventName)) {
+      return this._observables.get(eventName)!;
     }
-    const observable = this.getEventObservable(eventType);
-    this._observables.set(eventType, observable);
+    const observable = this.getEventObservable(eventName);
+    this._observables.set(eventName, observable);
     return observable;
   }
 
@@ -106,15 +103,20 @@ export class ServerSentEventService {
    * Html5 Web Push API publisher Utility
    * @param notification
    */
-  static async webPushApiTrigger(notification: NotificationModel) {
+  static async webPushApiTrigger(
+    notification: NotificationModel,
+    options?: { selfDestroy: boolean }
+  ) {
     var standardNotification = new Notification('Notification', {
       body: notification.data,
       icon: 'favicon.ico',
       dir: 'auto', // ltr/rtl
     });
     // optional - self destrcution
-    setTimeout(function () {
-      standardNotification.close();
-    }, notification.duration);
+    if (options?.selfDestroy === true) {
+      setTimeout(() => {
+        standardNotification.close();
+      }, notification.duration);
+    }
   }
 }
