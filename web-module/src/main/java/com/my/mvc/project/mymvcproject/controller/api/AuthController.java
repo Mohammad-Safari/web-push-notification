@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -108,8 +108,7 @@ public class AuthController {
         };
     }
 
-    @PostMapping("/logout")
-    @ResponseBody
+    @GetMapping("/logout")
     public RawResponseDto logout(HttpServletResponse response) {
         cookieUtil.set(response::addCookie, ContextConstants.AUTHORIZATION_HEADER_NAME, "");
         // invalidate token
