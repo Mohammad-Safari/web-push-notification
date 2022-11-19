@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.function.ServerResponse.SseBuilder;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.my.mvc.project.mymvcproject.context.RequestContext;
@@ -71,6 +72,16 @@ public class EventListenerComponent {
         }
     }
 
+    @SneakyThrows
+    public void informConnectionOpening(RequestContext requestContext) {
+        var user = userService.getByUsername2(requestContext.getUserContext().getUsername());
+        var event = Event.builder().receiver(user).data("connection is opened now").name("open").build();
+        asyncTaskExecutor.execute(() -> {
+            handleEvent(event);
+        });
+
+    }
+
     @EventListener(Event.class)
     @SneakyThrows
     public void handleEvent(Event event) {
@@ -88,6 +99,7 @@ public class EventListenerComponent {
             return;
         }
         var sseEvent = SseEmitter.event()
+                .reconnectTime(5000)
                 .data(event.getData())
                 .id(event.getData())
                 .name(event.getName());
