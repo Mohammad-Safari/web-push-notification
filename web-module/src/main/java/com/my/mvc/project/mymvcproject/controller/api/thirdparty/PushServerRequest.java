@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.mvc.project.mymvcproject.context.RequestContext;
-import com.my.mvc.project.mymvcproject.dto.PushServerResponseDto;
-import com.my.mvc.project.mymvcproject.dto.PushServerUserResolverRequestDto;
+import com.my.mvc.project.mymvcproject.dto.SubscriptionRequestDto;
+import com.my.mvc.project.mymvcproject.dto.SubscriptionResponseDto;
 import com.my.mvc.project.mymvcproject.exceptions.UserSubscritionNotfoundException;
 import com.my.mvc.project.mymvcproject.service.UserService;
 
@@ -29,22 +29,22 @@ public class PushServerRequest {
     private ConcurrentHashMap<String, String> userPushId = new ConcurrentHashMap<>();
 
     @GetMapping("/getSubscriptionUrl")
-    public PushServerResponseDto createPushServerDto() {
+    public SubscriptionResponseDto createPushServerDto() {
         var username = context.getUserContext().getUsername();
         var uuid = UUID.randomUUID().toString().toUpperCase().replace("-", "");
         uuid = userPushId.putIfAbsent(username, uuid);
         // some connection to third party ¯\_(ツ)_/¯
-        var response = new PushServerResponseDto();
+        var response = new SubscriptionResponseDto();
         response.setUUID(uuid);
         response.setUrl(configuration.PUSH_SERVER_URL + uuid);
         return response;
     }
 
     @PostMapping("/getSubscriptionUrl")
-    public PushServerResponseDto getPushServerDto(@RequestBody PushServerUserResolverRequestDto userResolver) throws UserSubscritionNotfoundException {
+    public SubscriptionResponseDto getPushServerDto(@RequestBody SubscriptionRequestDto userResolver) throws UserSubscritionNotfoundException {
         var username = userResolver.getUsername();
         var uuid = userPushId.getOrDefault(username,"");
-        var response = new PushServerResponseDto();
+        var response = new SubscriptionResponseDto();
         if(uuid.isEmpty()) {
             throw new UserSubscritionNotfoundException();
         }
