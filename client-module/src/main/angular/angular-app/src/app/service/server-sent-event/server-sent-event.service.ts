@@ -1,22 +1,28 @@
-import { Inject, Injectable, InjectionToken, NgZone } from '@angular/core';
-import { Observable } from 'rxjs';
+import {
+  Inject,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  Optional,
+} from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { NotificationModel } from 'src/app/model/notification';
+import { UserUuidResolverService } from '../user-uuid-resolver/user-uuid-resolver.service';
 
 type SseEmitter = {
   next: (messageEvent: MessageEvent<any>) => void;
   error: (messageEvent: Event) => void;
 };
 
-export const EVENT_SERVER_URL = new InjectionToken<string>('EVENT_SERVER_URL', {
-  providedIn: 'root',
-  factory: () => '/event/notification/subscribe',
-});
+export const SUBSCRIBER_ENDPOINT = new InjectionToken<string>(
+  'SUBSCRIBER_ENDPOINT'
+);
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ServerSentEventService {
-  private _sseEventSource: EventSource;
+  private _sseEventSource: EventSource; // is going to be deleted
+  private _sseEventSourceObservable: Observable<EventSource>; // is observable due to subscription is not available at the time of service creation
   private _genericObservable: Observable<any>;
   private _observables: Map<string, Observable<MessageEvent>> = new Map();
   get genericObservable(): Observable<any> {
@@ -25,11 +31,27 @@ export class ServerSentEventService {
 
   constructor(
     private zone: NgZone,
-    @Inject(EVENT_SERVER_URL) private eventServerUrl: string
+    @Optional() resolverService: UserUuidResolverService,
+    @Inject(SUBSCRIBER_ENDPOINT) private eventServerUrl: string
   ) {
-    this._sseEventSource = new EventSource(eventServerUrl, {
-      withCredentials: true
-    });
+    if (resolverService) {
+      // uuid as resolver token
+      this._sseEventSourceObservable =
+        resolverService.currentPushSubscription.pipe(
+          map((subscription) => {
+            this._sseEventSource = new EventSource(
+              subscription.userSubscriptionUrl
+            );
+            return this._sseEventSource;
+          })
+        );
+    } else {
+      // cookie as resolver token
+      this._sseEventSource = new EventSource(eventServerUrl, {
+        withCredentials: true,
+      });
+      this._sseEventSourceObservable = of(this._sseEventSource);
+    }
     this._genericObservable = this.initEventObserver(this._sseEventSource);
   }
 
@@ -65,7 +87,9 @@ export class ServerSentEventService {
     const onevent = this.zoneRunnerFn;
     const emitter = (observer: SseEmitter) => {
       const handler = onevent(observer);
-      this._sseEventSource.addEventListener(eventType, handler as any);
+      this._sseEventSourceObservable.subscribe((eventSource) =>
+        eventSource!.addEventListener(eventType, handler as any)
+      );
     };
     return new Observable(emitter);
   }

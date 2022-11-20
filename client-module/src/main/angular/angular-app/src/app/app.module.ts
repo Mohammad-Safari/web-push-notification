@@ -9,13 +9,19 @@ import { LoginComponent } from './page/login/login.component';
 import { SignupComponent } from './page/signup/signup.component';
 import { NotificationComponent } from './page/notification/notification.component';
 import { ApiInterceptor } from './interceptor/api.interceptor';
+import { ThirdPartyNotificationComponent } from './page/third-party-notification/third-party-notification.component';
+import { PublisherComponent } from './component/publisher/publisher.component';
+import { SubscriberComponent } from './component/subscriber/subscriber.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     SignupComponent,
-    NotificationComponent
+    NotificationComponent,
+    ThirdPartyNotificationComponent,
+    PublisherComponent,
+    SubscriberComponent
   ],
   imports: [
     BrowserModule,

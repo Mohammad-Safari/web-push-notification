@@ -1,0 +1,44 @@
+<div #notificationPublisher class="noselect notification-publisher">
+  <h1>Notification publisher</h1>
+  <form (ngSubmit)="onPublish()" #publishForm="ngForm">
+    <div class="form-group">
+      <label for="receiver">receiver</label>
+      <input
+        type="text"
+        class="form-control"
+        id="reciever"
+        name="receiver"
+        [(ngModel)]="eventModel.receiver"
+        #receiver="ngModel"
+        required
+      />
+      <div
+        *ngIf="receiver.invalid && (receiver.dirty || receiver.touched)"
+        class="alert alert-danger"
+      ></div>
+      <label for="data">message</label>
+      <input
+        type="text"
+        class="form-control"
+        id="data"
+        name="data"
+        [(ngModel)]="eventModel.data"
+        #data="ngModel"
+        required
+      />
+      <div
+        *ngIf="data.invalid && (data.dirty || data.touched)"
+        class="alert alert-danger"
+      >
+        <div *ngIf="data.errors?.required">Message is Required.</div>
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="publishForm.invalid"
+    >
+      Publish
+    </button>
+  </form>
+</div>

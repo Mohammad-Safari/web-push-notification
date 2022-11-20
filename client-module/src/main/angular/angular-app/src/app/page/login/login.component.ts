@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     this.loginService.login(this.loginModel).subscribe({
       next: () => {
-        this.router.navigate(['/notification']);
+        this.router.navigate(['../']);
       },
     });
   }
