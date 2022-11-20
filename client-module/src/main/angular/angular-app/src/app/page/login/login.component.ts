@@ -14,12 +14,15 @@ export class LoginComponent implements OnInit {
   constructor(private loginService: LoginService, private router: Router) {}
 
   ngOnInit(): void {}
-  
+
   onSubmit() {
     this.loginService.login(this.loginModel).subscribe({
       next: () => {
         this.router.navigate(['/notification']);
       },
     });
+  }
+  logout() {
+    this.loginService.logout().subscribe();
   }
 }
