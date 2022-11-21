@@ -21,7 +21,6 @@ export const SUBSCRIBER_ENDPOINT = new InjectionToken<string>(
 
 @Injectable()
 export class ServerSentEventService {
-  private _sseEventSource: EventSource; // is going to be deleted
   private _sseEventSourceObservable: Observable<EventSource>; // is observable due to subscription is not available at the time of service creation
   private _genericObservable: Observable<any>;
   private _observables: Map<string, Observable<MessageEvent>> = new Map();
@@ -39,20 +38,20 @@ export class ServerSentEventService {
       this._sseEventSourceObservable =
         resolverService.currentPushSubscription.pipe(
           map((subscription) => {
-            this._sseEventSource = new EventSource(
+            let sseEventSource = new EventSource(
               subscription.userSubscriptionUrl
             );
-            return this._sseEventSource;
+            return sseEventSource;
           })
         );
     } else {
       // cookie as resolver token
-      this._sseEventSource = new EventSource(eventServerUrl, {
+      let sseEventSource = new EventSource(eventServerUrl, {
         withCredentials: true,
       });
-      this._sseEventSourceObservable = of(this._sseEventSource);
+      this._sseEventSourceObservable = of(sseEventSource);
     }
-    this._genericObservable = this.initEventObserver(this._sseEventSource);
+    this._genericObservable = this.initEventObserver(this._sseEventSourceObservable);
   }
 
   private zoneRunnerFn = (observer: SseEmitter) => {
@@ -72,13 +71,15 @@ export class ServerSentEventService {
   };
 
   private initEventObserver(
-    sseEventSource: EventSource
+    sseEventSourceObservable: Observable<EventSource>
   ): Observable<MessageEvent> {
     const onmessage = this.zoneRunnerFn;
     const onerror = this.zoneErrorFn;
     const emitter = (observer: SseEmitter) => {
-      sseEventSource.onmessage = onmessage(observer);
-      sseEventSource.onerror = onerror(observer);
+      sseEventSourceObservable.subscribe((eventSource) => {
+        eventSource.onmessage = onmessage(observer);
+        eventSource.onerror = onerror(observer);
+      });
     };
     return new Observable(emitter);
   }
@@ -107,7 +108,7 @@ export class ServerSentEventService {
   }
 
   public closeEventService() {
-    this._sseEventSource.close();
+    this._sseEventSourceObservable.subscribe({next:eventSource=>{eventSource.close();}});
     this._observables.clear();
   }
 
