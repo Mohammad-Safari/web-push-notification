@@ -31,8 +31,8 @@ public class PushServerRequest {
     @GetMapping("/getSubscriptionUrl")
     public SubscriptionResponseDto createPushServerDto() {
         var username = context.getUserContext().getUsername();
-        var uuid = UUID.randomUUID().toString().toUpperCase().replace("-", "");
-        uuid = userPushId.putIfAbsent(username, uuid);
+        var uuid = userPushId.getOrDefault(username, UUID.randomUUID().toString().toUpperCase().replace("-", ""));
+        userPushId.putIfAbsent(username, uuid);
         // some connection to third party ¯\_(ツ)_/¯
         var response = new SubscriptionResponseDto();
         response.setUUID(uuid);
@@ -41,11 +41,12 @@ public class PushServerRequest {
     }
 
     @PostMapping("/getSubscriptionUrl")
-    public SubscriptionResponseDto getPushServerDto(@RequestBody SubscriptionRequestDto userResolver) throws UserSubscritionNotfoundException {
+    public SubscriptionResponseDto getPushServerDto(@RequestBody SubscriptionRequestDto userResolver)
+            throws UserSubscritionNotfoundException {
         var username = userResolver.getUsername();
-        var uuid = userPushId.getOrDefault(username,"");
+        var uuid = userPushId.getOrDefault(username, "");
         var response = new SubscriptionResponseDto();
-        if(uuid.isEmpty()) {
+        if (uuid.isEmpty()) {
             throw new UserSubscritionNotfoundException();
         }
         response.setUUID(uuid);
