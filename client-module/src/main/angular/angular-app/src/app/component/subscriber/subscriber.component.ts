@@ -7,6 +7,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { animationFrameScheduler } from 'rxjs';
 import { map, takeWhile } from 'rxjs/operators';
 import { EventModel } from 'src/app/model/event-model';
 import { NotificationModel } from 'src/app/model/notification';
@@ -65,44 +66,56 @@ export class SubscriberComponent implements OnInit {
   }
 
   private renderNotification(notification: NotificationModel) {
-    let notificationBox = this.renderer.createElement('div');
-    let header = this.renderer.createElement('b');
-    let content = this.renderer.createElement('div');
-    const NOTIFICATION_TYPE = notification.event ?? 'server-notification';
-    const boxColorClass = NOTIFICATION_TYPE;
-    let classesToAdd = ['message-box', boxColorClass];
-    const headerText = this.renderer.createText(NOTIFICATION_TYPE);
-    const text = this.renderer.createText(notification.data);
-    classesToAdd.forEach((x) => this.renderer.addClass(notificationBox, x));
-    this.renderer.setStyle(
-      notificationBox,
-      'transition',
-      `opacity ${notification.duration}ms`
+    const notifData = this.renderer.createText(notification.data);
+    const notifType = notification.event ?? 'server-notification';
+    const notifContainer = this.subscriberContainer.nativeElement;
+    const notifBox = this.renderer.createElement('div');
+    const contentBox = this.renderer.createElement('div');
+    const notifheader = this.renderer.createElement('b');
+    const headerText = this.renderer.createText(notifType);
+    const classesToAdd = ['message-box', notifType];
+    const stylesToAdd = {
+      'transition': `ease-out margin-left 300ms`,
+      'margin-left': '-100%',
+      'opacity': '1',
+    };
+    classesToAdd.forEach((c) => this.renderer.addClass(notifBox, c));
+    Object.entries(stylesToAdd).forEach(([k, v]) =>
+      this.renderer.setStyle(notifBox, k, v)
     );
-    this.renderer.setStyle(notificationBox, 'opacity', '1');
-    this.renderer.appendChild(header, headerText);
-    this.renderer.appendChild(content, text);
-    this.renderer.appendChild(
-      this.subscriberContainer.nativeElement,
-      notificationBox
-    );
-    this.renderer.appendChild(notificationBox, header);
-    this.renderer.appendChild(notificationBox, content);
-    this.schedEntryRemove(notificationBox, notification);
+    this.renderer.appendChild(notifContainer, notifBox);
+    this.renderer.appendChild(notifBox, notifheader);
+    this.renderer.appendChild(notifheader, headerText);
+    this.renderer.appendChild(notifBox, contentBox);
+    this.renderer.appendChild(contentBox, notifData);
+    this.schedEntryEntrance(notifBox, notification);
+    this.schedEntryRemove(notifBox, notification);
+  }
+
+  private schedEntryEntrance(notifBox: any, notification: NotificationModel) {
+    animationFrameScheduler.schedule(() => {
+      this.renderer.setStyle(notifBox, 'margin-left', '0');
+      // to make sure timing will not change as fast as setting
+      animationFrameScheduler.schedule(() => {
+        this.renderer.setStyle(notifBox, 'transition', `ease-in opacity 300ms`);
+      }, 0);
+    }, 300);
   }
 
   private schedEntryRemove(
     notificationBox: any,
     notification: NotificationModel
   ) {
-    setTimeout(() => {
+    animationFrameScheduler.schedule(() => {
       this.renderer.setStyle(notificationBox, 'opacity', '0');
-      setTimeout(() => {
+      // to make sure transition hapen before deletion
+      animationFrameScheduler.schedule(() => {
         this.renderer.removeChild(
           this.subscriberContainer.nativeElement,
           notificationBox
         );
-      }, notification.duration);
+      }, 300);
+      // enough time for opacity transition(margin transition didn't need!)
     }, notification.duration);
   }
 
