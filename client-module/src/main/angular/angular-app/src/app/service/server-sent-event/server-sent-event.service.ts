@@ -5,8 +5,8 @@ import {
   NgZone,
   Optional,
 } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { asapScheduler, Observable, scheduled } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { NotificationModel } from 'src/app/model/notification';
 import { UserUuidResolverService } from '../user-uuid-resolver/user-uuid-resolver.service';
 
@@ -49,9 +49,14 @@ export class ServerSentEventService {
       let sseEventSource = new EventSource(eventServerUrl, {
         withCredentials: true,
       });
-      this._sseEventSourceObservable = of(sseEventSource);
+      this._sseEventSourceObservable = scheduled(
+        [sseEventSource],
+        asapScheduler
+      );
     }
-    this._genericObservable = this.initEventObserver(this._sseEventSourceObservable);
+    this._genericObservable = this.initEventObserver(
+      this._sseEventSourceObservable
+    );
   }
 
   private zoneRunnerFn = (observer: SseEmitter) => {
@@ -76,9 +81,11 @@ export class ServerSentEventService {
     const onmessage = this.zoneRunnerFn;
     const onerror = this.zoneErrorFn;
     const emitter = (observer: SseEmitter) => {
-      sseEventSourceObservable.subscribe((eventSource) => {
-        eventSource.onmessage = onmessage(observer);
-        eventSource.onerror = onerror(observer);
+      this.zone.run(() => {
+        sseEventSourceObservable.subscribe((eventSource) => {
+          eventSource.onmessage = onmessage(observer);
+          eventSource.onerror = onerror(observer);
+        });
       });
     };
     return new Observable(emitter);
@@ -108,7 +115,11 @@ export class ServerSentEventService {
   }
 
   public closeEventService() {
-    this._sseEventSourceObservable.subscribe({next:eventSource=>{eventSource.close();}});
+    this._sseEventSourceObservable.subscribe({
+      next: (eventSource) => {
+        eventSource.close();
+      },
+    });
     this._observables.clear();
   }
 
@@ -139,7 +150,7 @@ export class ServerSentEventService {
     });
     // optional - self destrcution
     if (options?.selfDestroy === true) {
-      setTimeout(() => {
+      asapScheduler.schedule(() => {
         standardNotification.close();
       }, notification.duration);
     }
