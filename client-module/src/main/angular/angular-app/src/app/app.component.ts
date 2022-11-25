@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { LoginService } from './service/login/login.service';
 
 @Component({
@@ -7,8 +8,9 @@ import { LoginService } from './service/login/login.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'Spring Boot - Angular Application';
+  title: string = 'Spring Boot - Angular Application';
   name: string | null;
+  loginSubscription: Subscription;
   constructor(private loginService: LoginService) {}
   ngOnInit(): void {
     this.loginService.isAuthenticated()
@@ -17,5 +19,9 @@ export class AppComponent {
     this.loginService.loginObservable.subscribe((name) => {
       this.name = name;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.loginSubscription.unsubscribe();
   }
 }

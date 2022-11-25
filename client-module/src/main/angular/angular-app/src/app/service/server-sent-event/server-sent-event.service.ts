@@ -3,10 +3,10 @@ import {
   Injectable,
   InjectionToken,
   NgZone,
-  Optional,
+  Optional
 } from '@angular/core';
-import { asapScheduler, Observable, scheduled } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { asapScheduler, Observable, scheduled, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { NotificationModel } from 'src/app/model/notification';
 import { UserUuidResolverService } from '../user-uuid-resolver/user-uuid-resolver.service';
 
@@ -23,6 +23,7 @@ export const SUBSCRIBER_ENDPOINT = new InjectionToken<string>(
 export class ServerSentEventService {
   private _sseEventSourceObservable: Observable<EventSource>; // is observable due to subscription is not available at the time of service creation
   private _genericObservable: Observable<any>;
+  private _unsubscribed: Subject<any> = new Subject();
   private _observables: Map<string, Observable<MessageEvent>> = new Map();
   get genericObservable(): Observable<any> {
     return this._genericObservable;
@@ -37,6 +38,7 @@ export class ServerSentEventService {
       // uuid as resolver token
       this._sseEventSourceObservable =
         resolverService.currentPushSubscription.pipe(
+          takeUntil(this._unsubscribed),
           map((subscription) => {
             let sseEventSource = new EventSource(
               subscription.userSubscriptionUrl
@@ -154,5 +156,10 @@ export class ServerSentEventService {
         standardNotification.close();
       }, notification.duration);
     }
+  }
+
+  ngOnDestroy() {
+    this._unsubscribed.next();
+    this._unsubscribed.complete();
   }
 }

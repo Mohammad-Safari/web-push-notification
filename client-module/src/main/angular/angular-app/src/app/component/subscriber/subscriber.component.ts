@@ -76,7 +76,7 @@ export class SubscriberComponent implements OnInit {
     const classesToAdd = ['message-box', notifType];
     const stylesToAdd = {
       'transition': `ease-out margin-left 300ms`,
-      'margin-left': '-100%',
+      'margin-left': '-110%',
       'opacity': '1',
     };
     classesToAdd.forEach((c) => this.renderer.addClass(notifBox, c));
@@ -98,7 +98,7 @@ export class SubscriberComponent implements OnInit {
       // to make sure timing will not change as fast as setting
       animationFrameScheduler.schedule(() => {
         this.renderer.setStyle(notifBox, 'transition', `ease-in opacity 300ms`);
-      }, 0);
+      }, 300);
     }, 300);
   }
 

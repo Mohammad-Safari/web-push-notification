@@ -31,7 +31,7 @@ export class PublisherComponent implements OnInit {
     private notificationService: EventPublisherService,
     private renderer: Renderer2
   ) {}
-  
+
   ngOnInit(): void {
   }
 
@@ -58,5 +58,8 @@ export class PublisherComponent implements OnInit {
         );
       },
     });
+  }
+  ngOnDestroy() {
+    this.publishNotifier.unsubscribe();
   }
 }
