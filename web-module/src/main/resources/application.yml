@@ -48,6 +48,9 @@ spring:
   thymeleaf:
     cache: false
 
+jwt:
+  secret: asdjadkahksjdakkjfvnd
+
 thirdparty:
   push-server:
     url: https://192.168.74.95:8443/sse/notification/

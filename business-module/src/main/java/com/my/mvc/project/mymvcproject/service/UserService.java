@@ -24,6 +24,7 @@ public class UserService {
     // @Cacheable(value = "id")
     public UserDetails getUserDetails(long id) throws UserNotValidException, UserNotRegisteredDetailsException {
         var userQuery = userRepository.findById(id);
+        // broken
         var detailQuery = userDetailsRepository.findById(id);
         if (detailQuery.isEmpty() || userQuery.isEmpty()) {
             throw new UserNotRegisteredDetailsException();
@@ -35,7 +36,7 @@ public class UserService {
         }
         return foundDetail;
     }
-
+    
     public User getByUsername(String username) {
         var userDetail = UserDetails.builder().username(username).build();
         var example = Example.of(userDetail);

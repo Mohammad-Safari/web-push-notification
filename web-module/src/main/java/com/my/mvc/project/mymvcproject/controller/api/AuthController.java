@@ -6,6 +6,7 @@ import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ import com.my.mvc.project.mymvcproject.util.RawResponseDto;
 
 import lombok.AllArgsConstructor;
 
-@RestController()
+@RestController
 @RequestMapping("/api")
 @AllArgsConstructor
 public class AuthController {
@@ -96,7 +97,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public RawResponseDto signup(@RequestBody SignupDto signupDto) {
+    public RawResponseDto signup(@RequestBody SignupDto signupDto, BCryptPasswordEncoder encoder) {
+        String encodedPassword = encoder.encode(signupDto.getPassword());
+        signupDto.setPassword(encodedPassword);
         userService.signup(signupDto);
         return new RawResponseDto(State.SUCCESS_STATE_MESSAGE.getState()) {
             String state;

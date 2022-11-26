@@ -1,7 +1,6 @@
 package com.my.mvc.project.mymvcproject.filter;
 
 import java.io.IOException;
-import java.util.Base64;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -9,12 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.annotation.Order;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.mvc.project.mymvcproject.context.RequestContext;
-import com.my.mvc.project.mymvcproject.context.UserContext;
 import com.my.mvc.project.mymvcproject.util.CookieUtil;
 
 import lombok.AllArgsConstructor;
@@ -29,20 +27,12 @@ public class ContextFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        var authorization = request.getHeader(ContextConstants.AUTHORIZATION_HEADER_NAME);
-        if (authorization == null || !authorization.startsWith(ContextConstants.AUTHORIZATION_HEADER_TYPE)) {
-            authorization = ContextConstants.AUTHORIZATION_HEADER_TYPE + " "
-                    + cookieUtil.get(request.getCookies(), ContextConstants.AUTHORIZATION_HEADER_NAME);
-            if (authorization.isEmpty()) {
-                response.sendError(403, "Authorization token is missing");
-                // request.getRequestDispatcher("/error").forward(request, response);
-            }
+                var secContext = SecurityContextHolder.getContext().getAuthentication();
+        if (secContext == null) {
+            return;
         }
-        var startIndex = ContextConstants.AUTHORIZATION_HEADER_TYPE.length() + 1;
-        var jsonToken = new String(Base64.getDecoder().decode(authorization.substring(startIndex)));
-        var requestContext = new ObjectMapper().readValue(jsonToken, UserContext.class);
-        reqContext.getUserContext().setUsername(requestContext.getUsername());
-        reqContext.getUserContext().setEmail(requestContext.getEmail());
+        reqContext.getUserContext().setUsername(((String) secContext.getName()));
+        reqContext.getUserContext().setEmail("");
         reqContext.getActionContext().setName(request.getHeader(ContextConstants.ACTION_HEADER_NAME));
         filterChain.doFilter(request, response);
     }

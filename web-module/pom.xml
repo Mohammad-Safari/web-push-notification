@@ -20,6 +20,8 @@
             <groupId>com.my.mvc.project</groupId>
             <artifactId>client-module</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <optional>true</optional>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.my.mvc.project</groupId>

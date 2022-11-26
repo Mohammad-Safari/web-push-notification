@@ -1,13 +1,16 @@
 package com.my.mvc.project.mymvcproject.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum UserType {
     ADMIN("admin"),
     USER("user"),
     GUEST("guest");
 
-    private String type;
+    private String value;
 
-    UserType(String type) {
-        this.type = type;
+    UserType(String value) {
+        this.value = value;
     }
 }
