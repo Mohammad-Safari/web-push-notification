@@ -37,8 +37,8 @@ public class UserService {
     }
 
     public User getByUsername(String username) {
-        var userDetail = UserDetails.builder().username(username).build();
-        var example = Example.of(userDetail);
+        var userDetails = UserDetails.builder().username(username).build();
+        var example = Example.of(userDetails);
         return userDetailsRepository.findOne(example).orElse(null).getUser();
     }
 

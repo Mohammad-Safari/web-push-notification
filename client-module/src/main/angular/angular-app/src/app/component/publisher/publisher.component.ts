@@ -16,7 +16,7 @@ import { EventPublisherService } from 'src/app/service/event-publisher/event-pub
   templateUrl: './publisher.component.html',
   styleUrls: ['./publisher.component.scss'],
 })
-export class PublisherComponent implements OnDestroy{
+export class PublisherComponent implements OnDestroy {
   public eventModel = new EventModel();
   public pushSupport: boolean;
   public pushGranted: boolean;
@@ -26,6 +26,12 @@ export class PublisherComponent implements OnDestroy{
   @Output()
   publisherNotification: EventEmitter<NotificationModel> = new EventEmitter();
   private _subscribed = true;
+  options = [
+    'server-notification' /* info */,
+    'server-warning',
+    'server-action',
+    'server-success',
+  ].map((opt) => ({ label: opt }));
 
   constructor(
     private notificationService: EventPublisherService,
