@@ -3,15 +3,16 @@ import {
   Injectable,
   InjectionToken,
   NgZone,
-  Optional
+  OnDestroy,
+  Optional,
 } from '@angular/core';
 import { asapScheduler, Observable, scheduled, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NotificationModel } from 'src/app/model/notification';
 import { UserUuidResolverService } from '../user-uuid-resolver/user-uuid-resolver.service';
 
-type SseEmitter = {
-  next: (messageEvent: MessageEvent<any>) => void;
+type SseEmitter<T> = {
+  next: (messageEvent: T) => void;
   error: (messageEvent: Event) => void;
 };
 
@@ -20,12 +21,12 @@ export const SUBSCRIBER_ENDPOINT = new InjectionToken<string>(
 );
 
 @Injectable()
-export class ServerSentEventService {
+export class ServerSentEventService<T> implements OnDestroy {
   private _sseEventSourceObservable: Observable<EventSource>; // is observable due to subscription is not available at the time of service creation
-  private _genericObservable: Observable<any>;
-  private _unsubscribed: Subject<any> = new Subject();
-  private _observables: Map<string, Observable<MessageEvent>> = new Map();
-  get genericObservable(): Observable<any> {
+  private _genericObservable: Observable<MessageEvent | Event>;
+  private _unsubscribed: Subject<never> = new Subject();
+  private _observables: Map<string, Observable<T>> = new Map();
+  get genericObservable(): Observable<MessageEvent | Event> {
     return this._genericObservable;
   }
 
@@ -40,7 +41,7 @@ export class ServerSentEventService {
         resolverService.currentPushSubscription.pipe(
           takeUntil(this._unsubscribed),
           map((subscription) => {
-            let sseEventSource = new EventSource(
+            const sseEventSource = new EventSource(
               subscription.userSubscriptionUrl
             );
             return sseEventSource;
@@ -48,7 +49,7 @@ export class ServerSentEventService {
         );
     } else {
       // cookie as resolver token
-      let sseEventSource = new EventSource(eventServerUrl, {
+      const sseEventSource = new EventSource(eventServerUrl, {
         withCredentials: true,
       });
       this._sseEventSourceObservable = scheduled(
@@ -61,15 +62,23 @@ export class ServerSentEventService {
     );
   }
 
-  private zoneRunnerFn = (observer: SseEmitter) => {
-    return (e: MessageEvent<any>) => {
+  private zoneRunnerGenericFn = (observer: SseEmitter<T>) => {
+    return (e: T) => {
       this.zone.run(() => {
         observer.next(e);
       });
     };
   };
 
-  private zoneErrorFn = (observer: SseEmitter) => {
+  private zoneRunnerFn = (observer: SseEmitter<MessageEvent>) => {
+    return (e: MessageEvent) => {
+      this.zone.run(() => {
+        observer.next(e);
+      });
+    };
+  };
+
+  private zoneErrorFn = (observer: SseEmitter<Event>) => {
     return (e: Event) => {
       this.zone.run(() => {
         observer.error(e);
@@ -79,10 +88,10 @@ export class ServerSentEventService {
 
   private initEventObserver(
     sseEventSourceObservable: Observable<EventSource>
-  ): Observable<MessageEvent> {
+  ): Observable<MessageEvent | Event> {
     const onmessage = this.zoneRunnerFn;
     const onerror = this.zoneErrorFn;
-    const emitter = (observer: SseEmitter) => {
+    const emitter = (observer: SseEmitter<MessageEvent | Event>) => {
       this.zone.run(() => {
         sseEventSourceObservable.subscribe((eventSource) => {
           eventSource.onmessage = onmessage(observer);
@@ -93,12 +102,12 @@ export class ServerSentEventService {
     return new Observable(emitter);
   }
 
-  private getEventObservable(eventType: string): Observable<MessageEvent> {
-    const onevent = this.zoneRunnerFn;
-    const emitter = (observer: SseEmitter) => {
-      const handler = onevent(observer);
+  private getEventObservable(eventType: string): Observable<T> {
+    const onevent = this.zoneRunnerGenericFn;
+    const emitter = (observer: SseEmitter<T>) => {
+      const handler = onevent(observer) as EventListener;
       this._sseEventSourceObservable.subscribe((eventSource) =>
-        eventSource!.addEventListener(eventType, handler as any)
+        eventSource.addEventListener(eventType, handler)
       );
     };
     return new Observable(emitter);
@@ -107,9 +116,9 @@ export class ServerSentEventService {
   public get(
     eventName: string,
     options: { ignoreExsiting: boolean } = { ignoreExsiting: false }
-  ): Observable<MessageEvent> {
-    if (options.ignoreExsiting === true && this._observables.has(eventName)) {
-      return this._observables.get(eventName)!;
+  ): Observable<T> {
+    if (options.ignoreExsiting !== true && this._observables.has(eventName)) {
+      return this._observables.get(eventName) as Observable<T>;
     }
     const observable = this.getEventObservable(eventName);
     this._observables.set(eventName, observable);
@@ -145,7 +154,7 @@ export class ServerSentEventService {
     notification: NotificationModel,
     options?: { selfDestroy: boolean }
   ) {
-    var standardNotification = new Notification('Notification', {
+    const standardNotification = new Notification('Notification', {
       body: notification.data,
       icon: 'favicon.ico',
       dir: 'auto', // ltr/rtl

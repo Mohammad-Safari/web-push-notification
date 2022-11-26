@@ -2,7 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  OnInit,
+  OnDestroy,
   Output,
   Renderer2,
   ViewChild,
@@ -16,31 +16,28 @@ import { EventPublisherService } from 'src/app/service/event-publisher/event-pub
   templateUrl: './publisher.component.html',
   styleUrls: ['./publisher.component.scss'],
 })
-export class PublisherComponent implements OnInit {
+export class PublisherComponent implements OnDestroy{
   public eventModel = new EventModel();
   public pushSupport: boolean;
   public pushGranted: boolean;
   public pushEnabled = false;
   @ViewChild('notificationPublisher')
   publisherContainer: ElementRef<HTMLDivElement>;
-  @Output('publisherNotification')
-  publishNotifier: EventEmitter<NotificationModel> = new EventEmitter();
-  private _subscribed: boolean = true;
+  @Output()
+  publisherNotification: EventEmitter<NotificationModel> = new EventEmitter();
+  private _subscribed = true;
 
   constructor(
     private notificationService: EventPublisherService,
     private renderer: Renderer2
   ) {}
 
-  ngOnInit(): void {
-  }
-
   onPublish() {
     this.notificationService.publish(this.eventModel).subscribe({
       next: () => {
-        let div = this.renderer.createElement('div');
+        const div = this.renderer.createElement('div');
         this.renderer.addClass(div, 'message-box');
-        let text = this.renderer.createText('Event is being send to Server');
+        const text = this.renderer.createText('Event is being send to Server');
         this.renderer.appendChild(div, text);
         this.renderer.appendChild(this.publisherContainer.nativeElement, div);
         setTimeout(() => {
@@ -48,7 +45,7 @@ export class PublisherComponent implements OnInit {
         }, 1000);
       },
       complete: () => {
-        this.publishNotifier.emit(
+        this.publisherNotification.emit(
           new NotificationModel(
             'Event Published By Server',
             '0',
@@ -60,6 +57,6 @@ export class PublisherComponent implements OnInit {
     });
   }
   ngOnDestroy() {
-    this.publishNotifier.unsubscribe();
+    this.publisherNotification.unsubscribe();
   }
 }

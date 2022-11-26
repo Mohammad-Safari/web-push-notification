@@ -9,7 +9,6 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {
-  constructor() {}
 
   intercept(
     request: HttpRequest<unknown>,
