@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationUserDetailService implements UserDetailsService {
+public class AuthenticationUserDetailsService implements UserDetailsService {
     private final UserService userService;
     private final com.my.mvc.project.mymvcproject.service.UserDetailsService detService;
 
@@ -24,11 +24,11 @@ public class AuthenticationUserDetailService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        com.my.mvc.project.mymvcproject.model.UserDetails userDetail;
+        com.my.mvc.project.mymvcproject.model.UserDetails userDetails;
         try {
-            userDetail = detService.loadUserByUsername(username);
-            return new User(userDetail.getUsername(),
-                    userDetail.getPassword(),
+            userDetails = detService.loadUserByUsername(username);
+            return new User(userDetails.getUsername(),
+                    userDetails.getPassword(),
                     Collections.emptyList());
         } catch (Exception e) {
             throw new UsernameNotFoundException(username);
