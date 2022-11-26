@@ -13,7 +13,7 @@
     >
       Web Push API
     </button>
-    <label *ngIf="pushSupport == false">
+    <label *ngIf="pushSupport === false">
       {{'Web Push API is not supported by your browser'}}
     </label>
     <label *ngIf="pushSupport === true && pushGranted === false">

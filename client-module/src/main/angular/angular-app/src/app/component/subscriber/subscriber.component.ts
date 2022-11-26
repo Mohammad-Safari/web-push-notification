@@ -2,6 +2,8 @@ import {
   Component,
   ElementRef,
   Input,
+  OnChanges,
+  OnDestroy,
   OnInit,
   Renderer2,
   SimpleChanges,
@@ -18,19 +20,19 @@ import { ServerSentEventService } from 'src/app/service/server-sent-event/server
   templateUrl: './subscriber.component.html',
   styleUrls: ['./subscriber.component.scss'],
 })
-export class SubscriberComponent implements OnInit {
+export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   public eventModel = new EventModel();
   public pushSupport: boolean;
   public pushGranted: boolean;
   public pushEnabled = false;
   @ViewChild('notificationSubscriber')
   subscriberContainer: ElementRef<HTMLDivElement>;
-  @Input('appNotification')
-  publishNotifier: NotificationModel;
-  private _subscribed: boolean = true;
+  @Input()
+  appNotification: NotificationModel;
+  private _subscribed = true;
 
   constructor(
-    private serverSentEventService: ServerSentEventService,
+    private serverSentEventService: ServerSentEventService<NotificationModel>,
     private renderer: Renderer2
   ) {}
 
@@ -44,12 +46,12 @@ export class SubscriberComponent implements OnInit {
           (message) =>
             new NotificationModel(
               message.data,
-              (message as any).id,
+              message.id,
               'server-notification'
             )
         )
       )
-      .subscribe((notification) => {
+      .subscribe((notification: NotificationModel) => {
         if (notification) {
           this.renderNotification(notification);
           if (this.pushEnabled) {
@@ -60,8 +62,8 @@ export class SubscriberComponent implements OnInit {
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges?.publishNotifier?.currentValue) {
-      this.renderNotification(simpleChanges.publishNotifier.currentValue);
+    if (simpleChanges?.appNotification?.currentValue) {
+      this.renderNotification(simpleChanges.appNotification.currentValue);
     }
   }
 
@@ -75,9 +77,9 @@ export class SubscriberComponent implements OnInit {
     const headerText = this.renderer.createText(notifType);
     const classesToAdd = ['message-box', notifType];
     const stylesToAdd = {
-      'transition': `ease-out margin-left 300ms`,
+      transition: `ease-out margin-left 300ms`,
       'margin-left': '-110%',
-      'opacity': '1',
+      opacity: '1',
     };
     classesToAdd.forEach((c) => this.renderer.addClass(notifBox, c));
     Object.entries(stylesToAdd).forEach(([k, v]) =>
@@ -88,11 +90,11 @@ export class SubscriberComponent implements OnInit {
     this.renderer.appendChild(notifheader, headerText);
     this.renderer.appendChild(notifBox, contentBox);
     this.renderer.appendChild(contentBox, notifData);
-    this.schedEntryEntrance(notifBox, notification);
+    this.schedEntryEntrance(notifBox);
     this.schedEntryRemove(notifBox, notification);
   }
 
-  private schedEntryEntrance(notifBox: any, notification: NotificationModel) {
+  private schedEntryEntrance(notifBox: HTMLDivElement) {
     animationFrameScheduler.schedule(() => {
       this.renderer.setStyle(notifBox, 'margin-left', '0');
       // to make sure timing will not change as fast as setting
@@ -103,7 +105,7 @@ export class SubscriberComponent implements OnInit {
   }
 
   private schedEntryRemove(
-    notificationBox: any,
+    notificationBox: HTMLDivElement,
     notification: NotificationModel
   ) {
     animationFrameScheduler.schedule(() => {

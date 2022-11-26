@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { NotificationModel } from 'src/app/model/notification';
 import {
   EventPublisherService,
-  PUBLSHER_ENDPOINT
+  PUBLSHER_ENDPOINT,
 } from 'src/app/service/event-publisher/event-publisher.service';
 import {
   ServerSentEventService,
-  SUBSCRIBER_ENDPOINT
+  SUBSCRIBER_ENDPOINT,
 } from 'src/app/service/server-sent-event/server-sent-event.service';
 
 @Component({
@@ -26,10 +26,8 @@ import {
     },
   ],
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent {
   public publisherNotification: NotificationModel;
-
-  ngOnInit(): void {}
 
   public notify(notification: NotificationModel) {
     this.publisherNotification = notification;

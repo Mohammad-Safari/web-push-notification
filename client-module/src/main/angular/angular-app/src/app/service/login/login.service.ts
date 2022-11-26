@@ -13,14 +13,14 @@ export class LoginService {
   constructor(private httpClient: HttpClient) {}
   login(loginModel: LoginModel) {
     return this.httpClient
-      .post('/api/login', loginModel, { observe: 'response' })
+      .post<{ [key: string]: string }>('/api/login', loginModel, {
+        observe: 'response',
+      })
       .pipe(
-        map((data: HttpResponse<any>) => {
+        map((data: HttpResponse<{ [key: string]: string }>) => {
           localStorage.setItem(
             'Authorization',
-            data.headers.get('Authorization') ??
-              data.body['Authorization'] ??
-              ''
+            data.headers.get('Authorization') ?? data.body?.Authorization ?? ''
           );
         }),
         tap(() => {
@@ -31,17 +31,15 @@ export class LoginService {
   }
 
   logout() {
-    return this.httpClient
-      .get('/api/logout', { observe: 'response' })
-      .pipe(
-        map((data: HttpResponse<any>) => {
-          localStorage.removeItem('Authorization');
-        }),
-        tap(() => {
-          this._isAuthenticated = false;
-          this.loginObservable.next(null);
-        })
-      );
+    return this.httpClient.get('/api/logout', { observe: 'response' }).pipe(
+      map(() => {
+        localStorage.removeItem('Authorization');
+      }),
+      tap(() => {
+        this._isAuthenticated = false;
+        this.loginObservable.next(null);
+      })
+    );
   }
 
   public isAuthenticated(): boolean {

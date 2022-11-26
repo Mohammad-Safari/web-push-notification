@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -10,13 +10,11 @@ import { LoginService } from 'src/app/service/login/login.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnDestroy {
   public loginModel: LoginModel = new LoginModel();
-  private _loginUnsubscribed: Subject<any> = new Subject();
+  private _loginUnsubscribed: Subject<never> = new Subject();
 
   constructor(private loginService: LoginService, private router: Router) {}
-
-  ngOnInit(): void {}
 
   onSubmit() {
     this.loginService

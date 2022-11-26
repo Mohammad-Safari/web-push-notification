@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { SignupModel } from 'src/app/model/signup-model';
 
 @Component({
@@ -6,10 +6,10 @@ import { SignupModel } from 'src/app/model/signup-model';
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent {
   singupModel: SignupModel = new SignupModel();
-  constructor() {}
 
-  ngOnInit(): void {}
-  onSubmit() {}
+  onSubmit() {
+    return undefined;
+  }
 }
