@@ -11,7 +11,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.function.ServerResponse.SseBuilder;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.my.mvc.project.mymvcproject.context.RequestContext;
@@ -101,7 +100,7 @@ public class EventListenerComponent {
         var sseEvent = SseEmitter.event()
                 .reconnectTime(5000)
                 .data(event.getData())
-                .id(event.getData())
+                .id(event.getId())
                 .name(event.getName());
         for (SseEmitter emitter : userEmitterList) {
             emitter.send(sseEvent);

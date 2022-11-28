@@ -1,4 +1,11 @@
 <div class="container">
-  <app-subscriber #appSubscriber class="notification-subscriber" [appNotification]="publisherNotification"></app-subscriber>
-  <app-publisher #appSubscriber class="notification-publisher" (publisherNotification)="notify($event)"></app-publisher>
+  <app-subscriber
+    #appSubscriber
+    class="notification-subscriber"
+  ></app-subscriber>
+  <app-publisher
+    #appPublisher
+    class="notification-publisher"
+    [appInternalNotifier]="appSubscriber.appInternalNotifier"
+  ></app-publisher>
 </div>

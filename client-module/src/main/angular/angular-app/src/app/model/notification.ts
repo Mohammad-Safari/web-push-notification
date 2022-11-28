@@ -1,12 +1,10 @@
 export class NotificationModel {
   data: string;
-  id: string;
-  event: string;
+  name: string
   duration: number;
-  constructor(data: string, id: string, type: string, duration?: number) {
+  constructor(data: string, name: string, duration?: number) {
     this.data = data;
-    this.id = id;
-    this.event = type;
+    this.name = name;
     this.duration = duration ?? 3000;
   }
 }

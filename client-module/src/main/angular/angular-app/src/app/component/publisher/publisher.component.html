@@ -44,6 +44,7 @@
         [(ngModel)]="eventModel.event"
         #event="ngModel"
         [appAutocomplete]="autocomplete"
+        autocomplete="off"
       />
       <app-autocomplete #autocomplete="appAutocomplete">
         <ng-template appAutocompleteContent>

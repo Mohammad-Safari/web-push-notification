@@ -1,12 +1,11 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
-  OnDestroy,
-  Output,
-  Renderer2,
-  ViewChild,
+  Input, OnDestroy,
+  Renderer2, ViewChild
 } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { EventModel } from 'src/app/model/event-model';
 import { NotificationModel } from 'src/app/model/notification';
 import { EventPublisherService } from 'src/app/service/event-publisher/event-publisher.service';
@@ -23,9 +22,9 @@ export class PublisherComponent implements OnDestroy {
   public pushEnabled = false;
   @ViewChild('notificationPublisher')
   publisherContainer: ElementRef<HTMLDivElement>;
-  @Output()
-  publisherNotification: EventEmitter<NotificationModel> = new EventEmitter();
-  private _subscribed = true;
+  @Input()
+  appInternalNotifier = new Subject<NotificationModel>();
+  private _unsubscribed = new Subject<never>();
   options = [
     'server-notification' /* info */,
     'server-warning',
@@ -39,30 +38,38 @@ export class PublisherComponent implements OnDestroy {
   ) {}
 
   onPublish() {
-    this.notificationService.publish(this.eventModel).subscribe({
-      next: () => {
-        const div = this.renderer.createElement('div');
-        this.renderer.addClass(div, 'message-box');
-        const text = this.renderer.createText('Event is being send to Server');
-        this.renderer.appendChild(div, text);
-        this.renderer.appendChild(this.publisherContainer.nativeElement, div);
-        setTimeout(() => {
-          this.renderer.removeChild(this.publisherContainer.nativeElement, div);
-        }, 1000);
-      },
-      complete: () => {
-        this.publisherNotification.emit(
-          new NotificationModel(
-            'Event Published By Server',
-            '0',
-            'app-notification',
-            700
-          )
-        );
-      },
-    });
+    this.notificationService
+      .publish(this.eventModel)
+      .pipe(takeUntil(this._unsubscribed))
+      .subscribe({
+        next: () => {
+          const div = this.renderer.createElement('div');
+          this.renderer.addClass(div, 'message-box');
+          const text = this.renderer.createText(
+            'Event is being send to Server'
+          );
+          this.renderer.appendChild(div, text);
+          this.renderer.appendChild(this.publisherContainer.nativeElement, div);
+          setTimeout(() => {
+            this.renderer.removeChild(
+              this.publisherContainer.nativeElement,
+              div
+            );
+          }, 1000);
+        },
+        complete: () => {
+          this.appInternalNotifier?.next(
+            new NotificationModel(
+              'Event Published By Server',
+              'app-notification',
+              700
+            )
+          );
+        },
+      });
   }
   ngOnDestroy() {
-    this.publisherNotification.unsubscribe();
+    this._unsubscribed.next();
+    this._unsubscribed.complete();
   }
 }
