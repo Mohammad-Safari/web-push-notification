@@ -3,7 +3,7 @@
   <div id="subscriber-options">
     <button
       type="button"
-      class="btn"
+      class="btn mb-2"
       [ngClass]="pushEnabled === true ? 'btn-primary' : 'btn-outline-primary'"
       data-toggle="button"
       aria-pressed="false"
@@ -13,8 +13,8 @@
     >
       Web Push API
     </button>
-    <h3>notification options <i class="bi bi-chevron-expand" (click)="collapse(optionContainer)"></i></h3>
     <div class="event-toggle-container collapsed" #optionContainer>
+      <h3 class="ms-2 mt-1">subscription options <i class="bi bi-chevron-expand" (click)="collapse(optionContainer)"></i></h3>
       <input
         type="checkbox"
         class="btn-check"

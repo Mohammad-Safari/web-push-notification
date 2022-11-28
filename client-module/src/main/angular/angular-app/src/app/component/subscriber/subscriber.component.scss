@@ -1,11 +1,12 @@
 * {
   overflow: hidden;
 }
+/** collapsing styles **/
 #subscriber-options {
   position: relative;
 }
 .collapsed {
-  max-height: 25px;
+  max-height: 50px;
 }
 .collapsed:after {
   content: "";
@@ -20,18 +21,19 @@
     rgba(255, 255, 255, 1)
   );
 }
-
-.custom-input {
-  display: inline;
-  width: 25%;
-  margin: 3px;
-  height: 25px;
-  font-size: small;
+.collapsed:hover {
+  max-height: 500px;
 }
+.collapsed:hover:after {
+  background-image: none;
+}
+/** collapsing styles **/
+
 .event-toggle-container {
-  background-color: #eeeeee;
-  transition: ease-in-out height 500ms;
-  border-radius: 5px;
+  background-color: #bde1ff7a;
+  transition: max-height 500ms ease-in-out;
+  border-radius: 4px;
+  box-shadow:0 -1px 4px rgba(0, 0, 0, 0.2);
 }
 .event-toggle {
   width: 20%;
@@ -39,6 +41,13 @@
   height: 35px;
   font-size: small;
   text-overflow: ellipsis;
+}
+.custom-input {
+  display: inline;
+  width: 25%;
+  margin: 3px;
+  height: 25px;
+  font-size: small;
 }
 .message-box {
   width: 100%;
