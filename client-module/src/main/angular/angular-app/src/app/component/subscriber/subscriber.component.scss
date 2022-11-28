@@ -1,13 +1,37 @@
 * {
-  padding: 5px;
   overflow: hidden;
 }
+#subscriber-options {
+  position: relative;
+}
+.collapsed {
+  max-height: 25px;
+}
+.collapsed:after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 20px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+}
+
 .custom-input {
   display: inline;
   width: 25%;
   margin: 3px;
   height: 25px;
   font-size: small;
+}
+.event-toggle-container {
+  background-color: #eeeeee;
+  transition: ease-in-out height 500ms;
+  border-radius: 5px;
 }
 .event-toggle {
   width: 20%;

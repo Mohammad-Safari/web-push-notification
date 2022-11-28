@@ -45,6 +45,10 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
     private renderer: Renderer2
   ) {}
 
+  collapse(element: HTMLDivElement) {
+    element.classList.toggle('collapsed');
+  }
+
   ngOnInit(): void {
     this.pushSupport = 'Notification' in window;
     this.serverSentEventService.add(
