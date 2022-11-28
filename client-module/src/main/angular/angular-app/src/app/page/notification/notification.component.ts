@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { NotificationModel } from 'src/app/model/notification';
 import {
   EventPublisherService,
   PUBLSHER_ENDPOINT,
@@ -26,10 +25,4 @@ import {
     },
   ],
 })
-export class NotificationComponent {
-  public publisherNotification: NotificationModel;
-
-  public notify(notification: NotificationModel) {
-    this.publisherNotification = notification;
-  }
-}
+export class NotificationComponent {}

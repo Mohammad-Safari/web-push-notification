@@ -6,7 +6,7 @@ import {
   OnDestroy,
   Optional,
 } from '@angular/core';
-import { asapScheduler, Observable, scheduled, Subject } from 'rxjs';
+import { asapScheduler, merge, Observable, scheduled, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { NotificationModel } from 'src/app/model/notification';
 import { UserUuidResolverService } from '../user-uuid-resolver/user-uuid-resolver.service';
@@ -26,6 +26,13 @@ export class ServerSentEventService<T> implements OnDestroy {
   private _genericObservable: Observable<MessageEvent | Event>;
   private _unsubscribed: Subject<never> = new Subject();
   private _observables: Map<string, Observable<T>> = new Map();
+  private defaultConverter = (e: MessageEvent) => e as unknown as T;
+  set converter(fn: (e: MessageEvent) => T) {
+    this.defaultConverter = fn;
+  }
+  get converter(): (e: MessageEvent) => T {
+    return this.defaultConverter;
+  }
   get genericObservable(): Observable<MessageEvent | Event> {
     return this._genericObservable;
   }
@@ -63,9 +70,10 @@ export class ServerSentEventService<T> implements OnDestroy {
   }
 
   private zoneRunnerGenericFn = (observer: SseEmitter<T>) => {
-    return (e: T) => {
+    return (e: MessageEvent) => {
+      const t = this.converter(e);
       this.zone.run(() => {
-        observer.next(e);
+        observer.next(t);
       });
     };
   };
@@ -93,10 +101,12 @@ export class ServerSentEventService<T> implements OnDestroy {
     const onerror = this.zoneErrorFn;
     const emitter = (observer: SseEmitter<MessageEvent | Event>) => {
       this.zone.run(() => {
-        sseEventSourceObservable.subscribe((eventSource) => {
-          eventSource.onmessage = onmessage(observer);
-          eventSource.onerror = onerror(observer);
-        });
+        sseEventSourceObservable
+          .pipe(takeUntil(this._unsubscribed))
+          .subscribe((eventSource) => {
+            eventSource.onmessage = onmessage(observer);
+            eventSource.onerror = onerror(observer);
+          });
       });
     };
     return new Observable(emitter);
@@ -106,9 +116,11 @@ export class ServerSentEventService<T> implements OnDestroy {
     const onevent = this.zoneRunnerGenericFn;
     const emitter = (observer: SseEmitter<T>) => {
       const handler = onevent(observer) as EventListener;
-      this._sseEventSourceObservable.subscribe((eventSource) =>
-        eventSource.addEventListener(eventType, handler)
-      );
+      this._sseEventSourceObservable
+        .pipe(takeUntil(this._unsubscribed))
+        .subscribe((eventSource) =>
+          eventSource.addEventListener(eventType, handler)
+        );
     };
     return new Observable(emitter);
   }
@@ -126,19 +138,31 @@ export class ServerSentEventService<T> implements OnDestroy {
   }
 
   public closeEventService() {
-    this._sseEventSourceObservable.subscribe({
-      next: (eventSource) => {
-        eventSource.close();
-      },
-    });
+    this._sseEventSourceObservable
+      .pipe(takeUntil(this._unsubscribed))
+      .subscribe({
+        next: (eventSource) => {
+          eventSource.close();
+        },
+      });
     this._observables.clear();
+  }
+
+  public getAll(...events: string[]): Observable<T> {
+    events = events?.length ? events : Array.from(this._observables.keys());
+    const obs = events.map((event) => this.get(event));
+    return merge(...obs);
+  }
+
+  public add(event: string, observable: Observable<T>): void {
+    this._observables.set(event, observable);
   }
 
   /**
    * Html5 Web Push API Permission Utility
    * @param notification
    */
-  static async reauestPermission(): Promise<boolean> {
+  static async requestPermission(): Promise<boolean> {
     let permitted = false;
     permitted = await Notification.requestPermission().then((permission) => {
       return permission === 'granted' ? true : false;
@@ -168,6 +192,7 @@ export class ServerSentEventService<T> implements OnDestroy {
   }
 
   ngOnDestroy() {
+    this.closeEventService();
     this._unsubscribed.next();
     this._unsubscribed.complete();
   }

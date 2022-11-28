@@ -7,10 +7,10 @@ import {
   OnInit,
   Renderer2,
   SimpleChanges,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
-import { animationFrameScheduler } from 'rxjs';
-import { map, takeWhile } from 'rxjs/operators';
+import { animationFrameScheduler, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { EventModel } from 'src/app/model/event-model';
 import { NotificationModel } from 'src/app/model/notification';
 import { ServerSentEventService } from 'src/app/service/server-sent-event/server-sent-event.service';
@@ -27,9 +27,18 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   public pushEnabled = false;
   @ViewChild('notificationSubscriber')
   subscriberContainer: ElementRef<HTMLDivElement>;
+  appInternalNotifier = new Subject<NotificationModel>();
   @Input()
-  appNotification: NotificationModel;
-  private _subscribed = true;
+  subscribedEvents: { [key: string]: boolean } = {
+    'app-notification': false,
+    'server-notification': true,
+    'server-success': true,
+    'server-action': true,
+    'server-warning': true,
+    custom: false,
+  };
+  private _unsubscribed = new Subject<never>();
+  customEvent = 'custom-event';
 
   constructor(
     private serverSentEventService: ServerSentEventService<NotificationModel>,
@@ -38,19 +47,23 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.pushSupport = 'Notification' in window;
+    this.serverSentEventService.add(
+      'app-notification',
+      this.appInternalNotifier
+    );
+    this.applySubscription();
+  }
+
+  private applySubscription() {
+    this.serverSentEventService.converter = (event) =>
+      new NotificationModel(event.data, event.type ?? 'server-notification');
     this.serverSentEventService
-      .get('server-notification')
-      .pipe(
-        takeWhile(() => this._subscribed),
-        map(
-          (message) =>
-            new NotificationModel(
-              message.data,
-              message.id,
-              'server-notification'
-            )
-        )
+      .getAll(
+        ...Object.keys(this.subscribedEvents)
+          .filter((k) => this.subscribedEvents[k])
+          .map((e) => (e === 'custom' ? this.customEvent : e))
       )
+      .pipe(takeUntil(this._unsubscribed))
       .subscribe((notification: NotificationModel) => {
         if (notification) {
           this.renderNotification(notification);
@@ -62,14 +75,15 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(simpleChanges: SimpleChanges) {
-    if (simpleChanges?.appNotification?.currentValue) {
-      this.renderNotification(simpleChanges.appNotification.currentValue);
+    if (simpleChanges?.subscribedEvents?.currentValue) {
+      this._unsubscribed.next();
+      this.applySubscription();
     }
   }
 
   private renderNotification(notification: NotificationModel) {
     const notifData = this.renderer.createText(notification.data);
-    const notifType = notification.event ?? 'server-notification';
+    const notifType = notification.name ?? 'server-notification';
     const notifContainer = this.subscriberContainer.nativeElement;
     const notifBox = this.renderer.createElement('div');
     const contentBox = this.renderer.createElement('div');
@@ -122,17 +136,22 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._subscribed = false;
+    this._unsubscribed.next();
+    this._unsubscribed.complete();
     this.serverSentEventService.closeEventService();
   }
 
   toggleWebPush() {
     if (!this.pushEnabled && !this.pushGranted) {
-      ServerSentEventService.reauestPermission().then((permission) => {
+      ServerSentEventService.requestPermission().then((permission) => {
         this.pushGranted = this.pushEnabled = permission;
       });
     } else {
       this.pushEnabled = !this.pushEnabled;
     }
+  }
+  subscribedEventsChange() {
+    this._unsubscribed.next();
+    this.applySubscription();
   }
 }
