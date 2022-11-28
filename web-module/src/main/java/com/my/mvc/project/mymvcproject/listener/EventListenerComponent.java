@@ -1,5 +1,6 @@
 package com.my.mvc.project.mymvcproject.listener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +83,6 @@ public class EventListenerComponent {
     }
 
     @EventListener(Event.class)
-    @SneakyThrows
     public void handleEvent(Event event) {
         log.warn("Handling event ...");
         var userId = event.getReceiver().getId();
@@ -103,7 +103,11 @@ public class EventListenerComponent {
                 .id(event.getId())
                 .name(event.getName());
         for (SseEmitter emitter : userEmitterList) {
-            emitter.send(sseEvent);
+            try {
+                emitter.send(sseEvent);
+            } catch (IOException e) {
+                emitter.complete();
+            }
         }
         integrityId.put(userId, ++id);
     }
