@@ -41,18 +41,20 @@ export class AutocompleteDirective implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    fromEvent(this.origin, 'focus').subscribe(() => {
-      this.openDropdown();
+    fromEvent(this.origin, 'focus').subscribe({
+      next: () => {
+        this.openDropdown();
 
-      this.appAutocomplete
-        .optionsClick()
-        .pipe(takeUntil(this.overlayRef.detachments()))
-        .subscribe({
-          next: (value: string) => {
-            this.control?.setValue(value);
-            this.close();
-          },
-        });
+        this.appAutocomplete
+          .optionsClick()
+          .pipe(takeUntil(this.overlayRef.detachments()))
+          .subscribe({
+            next: (value: string) => {
+              this.control?.setValue(value);
+              this.close();
+            },
+          });
+      },
     });
   }
 
@@ -75,9 +77,9 @@ export class AutocompleteDirective implements OnInit, OnDestroy {
       this.vcr
     );
     this.overlayRef.attach(template);
-    overlayClickOutside(this.overlayRef, this.origin).subscribe(() =>
+    overlayClickOutside(this.overlayRef, this.origin).subscribe({next:() =>
       this.close()
-    );
+    });
   }
 
   private close() {

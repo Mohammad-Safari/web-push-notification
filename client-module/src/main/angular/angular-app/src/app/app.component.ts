@@ -16,8 +16,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.loginService.isAuthenticated()
       ? this.loginService.getUsername()
       : false;
-    this.loginService.loginObservable.subscribe((name) => {
-      this.name = name;
+    this.loginService.loginObservable.subscribe({
+      next: (name) => {
+        this.name = name;
+      },
     });
   }
 
