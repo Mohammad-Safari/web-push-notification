@@ -6,7 +6,7 @@
   position: relative;
 }
 .collapsed {
-  max-height: 50px;
+  max-height: 65px;
 }
 .collapsed:after {
   content: "";
@@ -26,14 +26,15 @@
 }
 .collapsed:hover:after {
   background-image: none;
+  z-index: -100;
 }
 /** collapsing styles **/
 
 .event-toggle-container {
-  background-color: #bde1ff7a;
+  background-color: rgb(239, 244, 245);
   transition: max-height 500ms ease-in-out;
   border-radius: 4px;
-  box-shadow:0 -1px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 .event-toggle {
   width: 20%;
@@ -51,6 +52,7 @@
 }
 .message-box {
   width: 100%;
+  padding: 15px;
   background-color: #f5f5f5;
   border: 1px solid #e5e5e5;
   border-radius: 7px;

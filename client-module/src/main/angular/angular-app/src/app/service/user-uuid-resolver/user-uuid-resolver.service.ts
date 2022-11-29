@@ -12,7 +12,7 @@ export type ResolverResponse = {
   url: string;
 };
 
-type PushSubscription = {
+export type PushSubscription = {
   userUuid: string;
   userSubscriptionUrl: string;
 };

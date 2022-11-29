@@ -12,7 +12,8 @@ import {
 import { animationFrameScheduler, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EventModel } from 'src/app/model/event-model';
-import { NotificationModel } from 'src/app/model/notification';
+import { NotificationModel, NOTIFICATION_DURATION } from 'src/app/model/notification-model';
+import { Subscriber } from 'src/app/service/interface/subscriber';
 import { ServerSentEventService } from 'src/app/service/server-sent-event/server-sent-event.service';
 
 @Component({
@@ -27,7 +28,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   public pushEnabled = false;
   @ViewChild('notificationSubscriber')
   subscriberContainer: ElementRef<HTMLDivElement>;
-  appInternalNotifier = new Subject<NotificationModel>();
+  appInternalNotifier = new Subject<NotificationModel<string>>();
   @Input()
   subscribedEvents: { [key: string]: boolean } = {
     'app-notification': false,
@@ -41,7 +42,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   customEvent = 'custom-event';
 
   constructor(
-    private serverSentEventService: ServerSentEventService<NotificationModel>,
+    private serverSentEventService: Subscriber<NotificationModel<string>>,
     private renderer: Renderer2
   ) {}
 
@@ -68,13 +69,15 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
           .map((e) => (e === 'custom' ? this.customEvent : e))
       )
       .pipe(takeUntil(this._unsubscribed))
-      .subscribe((notification: NotificationModel) => {
-        if (notification) {
-          this.renderNotification(notification);
-          if (this.pushEnabled) {
-            ServerSentEventService.webPushApiTrigger(notification);
+      .subscribe({
+        next: (notification: NotificationModel<string>) => {
+          if (notification) {
+            this.renderNotification(notification);
+            if (this.pushEnabled) {
+              ServerSentEventService.webPushApiTrigger(notification);
+            }
           }
-        }
+        },
       });
   }
 
@@ -85,7 +88,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private renderNotification(notification: NotificationModel) {
+  private renderNotification(notification: NotificationModel<string>) {
     const notifData = this.renderer.createText(notification.data);
     const notifType = notification.name ?? 'server-notification';
     const notifContainer = this.subscriberContainer.nativeElement;
@@ -124,7 +127,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
 
   private schedEntryRemove(
     notificationBox: HTMLDivElement,
-    notification: NotificationModel
+    notification: NotificationModel<string>
   ) {
     animationFrameScheduler.schedule(() => {
       this.renderer.setStyle(notificationBox, 'opacity', '0');
@@ -136,13 +139,12 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
         );
       }, 300);
       // enough time for opacity transition(margin transition didn't need!)
-    }, notification.duration);
+    }, NOTIFICATION_DURATION.REGULAR);
   }
 
   ngOnDestroy() {
     this._unsubscribed.next();
     this._unsubscribed.complete();
-    this.serverSentEventService.closeEventService();
   }
 
   toggleWebPush() {

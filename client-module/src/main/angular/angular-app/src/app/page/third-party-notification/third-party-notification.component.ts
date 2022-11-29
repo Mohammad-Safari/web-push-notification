@@ -1,17 +1,10 @@
 import { Component } from '@angular/core';
-import { NotificationModel } from 'src/app/model/notification';
-import {
-  EventPublisherService,
-  PUBLSHER_ENDPOINT,
-} from 'src/app/service/event-publisher/event-publisher.service';
-import {
-  ServerSentEventService,
-  SUBSCRIBER_ENDPOINT,
-} from 'src/app/service/server-sent-event/server-sent-event.service';
-import {
-  RESOLVER_ENDPOINT,
-  UserUuidResolverService,
-} from 'src/app/service/user-uuid-resolver/user-uuid-resolver.service';
+import { NotificationModel } from 'src/app/model/notification-model';
+import { EventPublisherService } from 'src/app/service/event-publisher/event-publisher.service';
+import { Publisher, PUBLSHER_ENDPOINT } from 'src/app/service/interface/publisher';
+import { Subscriber, SUBSCRIBER_ENDPOINT } from 'src/app/service/interface/subscriber';
+import { ServerSentEventService } from 'src/app/service/server-sent-event/server-sent-event.service';
+import { RESOLVER_ENDPOINT, UserUuidResolverService } from 'src/app/service/user-uuid-resolver/user-uuid-resolver.service';
 
 @Component({
   selector: 'app-third-party-notification',
@@ -31,11 +24,11 @@ import {
       useValue: '/api/thirdparty/getSubscriptionUrl',
     },
     {
-      provide: ServerSentEventService,
+      provide: Subscriber,
       useClass: ServerSentEventService,
     },
     {
-      provide: EventPublisherService,
+      provide: Publisher,
       useClass: EventPublisherService,
     },
     {
@@ -45,18 +38,18 @@ import {
   ],
 })
 export class ThirdPartyNotificationComponent {
-  public publisherNotification: NotificationModel;
+  public publisherNotification: NotificationModel<string>;
 
   // constructor(
-  //   service1: EventPublisherService,
-  //   service2: ServerSentEventService,
+  //   service1: Subscriber,
+  //   service2: Publisher,
   //   service3: UserUuidResolverService,
   //   @Inject(PUBLSHER_ENDPOINT) url1: string,
   //   @Inject(SUBSCRIBER_ENDPOINT) url2: string,
   //   @Inject(RESOLVER_ENDPOINT) url3: string
   // ) {}
 
-  public notify(notification: NotificationModel) {
+  public notify(notification: NotificationModel<string>) {
     this.publisherNotification = notification;
   }
 }

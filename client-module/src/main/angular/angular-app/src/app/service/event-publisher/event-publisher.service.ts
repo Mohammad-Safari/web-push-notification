@@ -1,19 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { Observable } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 import { EventModel } from '../../model/event-model';
+import { Publisher, PUBLSHER_ENDPOINT } from '../interface/publisher';
 import {
   ResolverResponse,
-  UserUuidResolverService,
+  UserUuidResolverService
 } from '../user-uuid-resolver/user-uuid-resolver.service';
 
-export const PUBLSHER_ENDPOINT = new InjectionToken<string>(
-  'PUBLISHER_ENDPOINT'
-);
-
 @Injectable()
-export class EventPublisherService {
+export class EventPublisherService
+  implements Publisher<EventModel, ResolverResponse>
+{
   constructor(
     private httpClient: HttpClient,
     @Optional() private resolverService: UserUuidResolverService,
@@ -22,26 +21,38 @@ export class EventPublisherService {
 
   publish(eventModel: EventModel): Observable<ResolverResponse> {
     if (this.resolverService) {
-      return this.resolverService
-        .getUserSubscriptionUuid(eventModel.receiver)
-        .pipe(
-          mergeMap((uuid) => {
-            if (uuid === '') {
-              throw Error(
-                "Can't resolve user subscription token. if user exists, make sure user have active subscription"
-              );
-            }
-            return this.httpClient.post(this.publisherEndpoint, {
-              ...eventModel,
-              receiver: uuid,
-            }) as Observable<ResolverResponse>;
-          })
-        );
+      return this.uuidBasedPublisher(eventModel);
     } else {
-      return this.httpClient.post(
-        this.publisherEndpoint,
-        eventModel
-      ) as Observable<ResolverResponse>;
+      return this.cookieBasedPublihser(eventModel);
     }
+  }
+
+  private uuidBasedPublisher(
+    eventModel: EventModel
+  ): Observable<ResolverResponse> {
+    return this.resolverService
+      .getUserSubscriptionUuid(eventModel.receiver)
+      .pipe(
+        concatMap((uuid) => {
+          if (uuid === '') {
+            throw Error(
+              "Can't resolve user subscription token. if user exists, make sure user have active subscription"
+            );
+          }
+          return this.httpClient.post(this.publisherEndpoint, {
+            ...eventModel,
+            receiver: uuid,
+          }) as Observable<ResolverResponse>;
+        })
+      );
+  }
+
+  private cookieBasedPublihser(
+    eventModel: EventModel
+  ): Observable<ResolverResponse> {
+    return this.httpClient.post(
+      this.publisherEndpoint,
+      eventModel
+    ) as Observable<ResolverResponse>;
   }
 }
