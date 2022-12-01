@@ -17,6 +17,7 @@ import { ApiInterceptor } from './interceptor/api.interceptor';
 import { LoginComponent } from './page/login/login.component';
 import { NotificationComponent } from './page/notification/notification.component';
 import { SignupComponent } from './page/signup/signup.component';
+import { SocketMessagingComponent } from './page/socket-messaging/socket-messaging.component';
 import { ThirdPartyNotificationComponent } from './page/third-party-notification/third-party-notification.component';
 import { FilterPipe } from './pipe/filter.pipe';
 
@@ -34,6 +35,7 @@ import { FilterPipe } from './pipe/filter.pipe';
     AutocompleteContentDirective,
     AutocompleteDirective,
     FilterPipe,
+    SocketMessagingComponent,
   ],
   imports: [
     BrowserModule,
