@@ -23,7 +23,7 @@ public class EventController {
 
     @PostMapping("/notification/publish")
     public void publishNotification(@RequestBody EventDto eventDto) {
-        Event event = Event.builder()
+        var event = Event.builder()
                 .sender(userService.getByUsername2(requestContext.getUserContext().getUsername()))
                 .receiver(userService.getByUsername2(eventDto.getReceiver()))
                 .data(eventDto.getData())

@@ -49,11 +49,15 @@ public class CookieUtil {
     }
 
     public void set(Consumer<Cookie> cookieSetter, String key, String value) {
-        Cookie cookie = new Cookie(key, value);
+        var cookie = new Cookie(key, value);
         cookie.setPath("/event");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookieSetter.accept(cookie);
+        var socketCookie = new Cookie(key, value);
+        cookie.setPath("/socket");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookieSetter.accept(socketCookie);
     }
 
 }
