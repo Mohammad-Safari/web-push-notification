@@ -42,6 +42,7 @@ public class WsMessageController extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         var eventDto = EventDto.builder().id("0").name("server-notification").data("user subscribed").build();
+        log.info("user subscribed sucessfully");
         session.sendMessage(new TextMessage(mapper.writeValueAsString(eventDto)));
         // TODO user session based collection
         // the messages will be broadcasted to all users.
@@ -76,6 +77,10 @@ public class WsMessageController extends TextWebSocketHandler {
 
     @EventListener(Event.class)
     private void handleServerEvent(Event<String> event) {
+        if (event.getName().equals("subscription")) {
+            log.info("user has already subscribed and event is already handled");
+            return;
+        }
         // TODO use user scoped sessions
         getOpenWebSockets().forEach(webSocketSession -> {
             var eventDto = EventDto.builder().id(event.getId()).name(event.getName()).data(event.getData()).build();

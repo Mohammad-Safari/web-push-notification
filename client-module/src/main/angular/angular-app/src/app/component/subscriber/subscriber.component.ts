@@ -28,7 +28,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   public pushEnabled = false;
   @ViewChild('notificationSubscriber')
   subscriberContainer: ElementRef<HTMLDivElement>;
-  appInternalNotifier = new Subject<NotificationModel<string>>();
+  appInternalNotifier = new Subject<NotificationModel>();
   @Input()
   subscribedEvents: { [key: string]: boolean } = {
     'app-notification': false,
@@ -42,7 +42,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
   customEvent = 'custom-event';
 
   constructor(
-    private serverSentEventService: Subscriber<NotificationModel<string>>,
+    private serverSentEventService: Subscriber<NotificationModel>,
     private renderer: Renderer2
   ) {}
 
@@ -70,7 +70,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
       )
       .pipe(takeUntil(this._unsubscribed))
       .subscribe({
-        next: (notification: NotificationModel<string>) => {
+        next: (notification: NotificationModel) => {
           if (notification) {
             this.renderNotification(notification);
             if (this.pushEnabled) {
@@ -88,7 +88,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private renderNotification(notification: NotificationModel<string>) {
+  private renderNotification(notification: NotificationModel) {
     const notifData = this.renderer.createText(notification.data);
     const notifType = notification.name ?? 'server-notification';
     const notifContainer = this.subscriberContainer.nativeElement;
@@ -127,7 +127,7 @@ export class SubscriberComponent implements OnInit, OnChanges, OnDestroy {
 
   private schedEntryRemove(
     notificationBox: HTMLDivElement,
-    notification: NotificationModel<string>
+    notification: NotificationModel
   ) {
     animationFrameScheduler.schedule(() => {
       this.renderer.setStyle(notificationBox, 'opacity', '0');
