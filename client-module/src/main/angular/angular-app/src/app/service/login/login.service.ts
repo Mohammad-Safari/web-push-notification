@@ -53,12 +53,31 @@ export class LoginService {
       throw Error('user is not authenticated');
     }
     let token = localStorage.getItem('Authorization') ?? '';
-    token = token?.substring('CUSTOM-AUTH '.length);
-    if (!token || !JSON.parse(atob(token))) {
-      throw Error('token is corrupted');
+    if (!token) {
+      throw Error('token is missing');
     }
-    const username = JSON.parse(atob(token))['username'];
-    this.loginObservable.next(username);
-    return username;
+    token = token.substring('CUSTOM-AUTH '.length).split('.')[1];
+    if (!token) {
+      localStorage.removeItem('Authorization');
+      document.cookie = '';
+      throw Error(
+        'token is in wrong format(token is now removed from all storages)'
+      );
+    }
+    let username = undefined;
+    try {
+      username = JSON.parse(atob(token))?.sub;
+    } catch (e) {
+      localStorage.removeItem('Authorization');
+      document.cookie = '';
+      throw Error(
+        'token is corrupted(token is now removed  from all storages)'
+      );
+    }
+    if (username) {
+      this.loginObservable.next(username);
+      return username;
+    }
+    throw Error('token data is missing');
   }
 }

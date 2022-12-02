@@ -25,7 +25,7 @@ public class UserDetailsService {
         }
         var foundDetail = detailQuery.get(0);
         var foundUser = foundDetail.getUser();
-        if (foundUser.getUserType() != UserType.USER) {
+        if (foundUser.getUserType() == UserType.GUEST) {
             throw new UserNotRegisteredDetailsException();
         }
         return foundDetail;
