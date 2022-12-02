@@ -17,22 +17,22 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationUserDetailService implements UserDetailsService {
+public class AuthenticationUserDetailsService implements UserDetailsService {
     private final UserService userService;
     private final com.my.mvc.project.mymvcproject.service.UserDetailsService userDetailsService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        try {
             var user = userService.getByUsername2(username);
             if (user == null) {
                 throw new UsernameNotFoundException(username);
             }
-            var details = userDetailsService.getUserDetails(username);
-            var gauth = new SimpleGrantedAuthority(user.getUserType().getValue());
-            return new User(username, details.getPassword(), List.of(gauth));
-        } catch (UserNotValidException | UserNotRegisteredDetailsException e) {
-            throw new UsernameNotFoundException(username);
-        }
+            try {
+                var details = userDetailsService.getUserDetails(username);
+                var gauth = new SimpleGrantedAuthority(user.getUserType().getValue());
+                return new User(username, details.getPassword(), List.of(gauth));
+            } catch (UserNotValidException | UserNotRegisteredDetailsException e) {
+                throw new UsernameNotFoundException(username);
+            }
     }
 }

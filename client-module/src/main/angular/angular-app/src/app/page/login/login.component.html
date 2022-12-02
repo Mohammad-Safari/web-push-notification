@@ -35,10 +35,10 @@
           <div *ngIf="password.errors?.required">Password is required.</div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary mr-1 ml-1" [disabled]="form.invalid">
+      <button type="submit" class="btn btn-primary me-3 mt-3" [disabled]="form.invalid">
         Login
       </button>
-      <button type="button" class="btn btn-danger mr-1 ml-1" (click)="logout()">
+      <button type="button" class="btn btn-danger me-3 mt-3" (click)="logout()">
         Logout
       </button>
     </form>

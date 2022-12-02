@@ -5,19 +5,21 @@
     "ng": "ng",
     "start": "ng serve --hmr --proxy-config proxy.conf.json --host 127.0.0.1 --ssl true ",
     "build": "ng build",
-    "watch": "ng build --watch --vendor-chunk --named-chunks --configuration development",
-    "test": "ng test"
+    "watch": "ng build --watch --vendor-chunk --named-chunks --configuration development --output-path ../../../../target/classes/angular-app",
+    "test": "ng test",
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~12.2.0",
-    "@angular/common": "~12.2.0",
-    "@angular/compiler": "~12.2.0",
-    "@angular/core": "~12.2.0",
-    "@angular/forms": "~12.2.0",
-    "@angular/platform-browser": "~12.2.0",
-    "@angular/platform-browser-dynamic": "~12.2.0",
-    "@angular/router": "~12.2.0",
+    "@angular/animations": "^15.0.1",
+    "@angular/cdk": "^15.0.0",
+    "@angular/common": "^15.0.1",
+    "@angular/compiler": "^15.0.1",
+    "@angular/core": "^15.0.1",
+    "@angular/forms": "^15.0.1",
+    "@angular/platform-browser": "^15.0.1",
+    "@angular/platform-browser-dynamic": "^15.0.1",
+    "@angular/router": "^15.0.1",
     "event-source-polyfill": "^1.0.31",
     "rxjs": "~6.6.0",
     "sse.js": "^0.6.1",
@@ -25,12 +27,20 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~12.2.6",
-    "@angular/cli": "~12.2.6",
-    "@angular/compiler-cli": "~12.2.0",
+    "@angular-devkit/build-angular": "^15.0.1",
+    "@angular-eslint/builder": "15.1.0",
+    "@angular-eslint/eslint-plugin": "15.1.0",
+    "@angular-eslint/eslint-plugin-template": "15.1.0",
+    "@angular-eslint/schematics": "15.1.0",
+    "@angular-eslint/template-parser": "15.1.0",
+    "@angular/cli": "^15.0.1",
+    "@angular/compiler-cli": "^15.0.1",
     "@types/event-source-polyfill": "^1.0.0",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^12.11.1",
+    "@typescript-eslint/eslint-plugin": "5.44.0",
+    "@typescript-eslint/parser": "5.44.0",
+    "eslint": "^8.28.0",
     "jasmine-core": "~3.8.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
@@ -38,6 +48,6 @@
     "karma-firefox-launcher": "^2.1.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
-    "typescript": "~4.3.5"
+    "typescript": "~4.8.4"
   }
 }

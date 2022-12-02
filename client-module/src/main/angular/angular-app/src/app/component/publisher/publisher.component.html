@@ -15,7 +15,9 @@
       <div
         *ngIf="receiver.invalid && (receiver.dirty || receiver.touched)"
         class="alert alert-danger"
-      ></div>
+      >
+        <div *ngIf="receiver.errors?.required">Reciever is Required.</div>
+      </div>
       <label for="data">message</label>
       <input
         type="text"
@@ -32,7 +34,32 @@
       >
         <div *ngIf="data.errors?.required">Message is Required.</div>
       </div>
+
+      <label for="receiver">notification type</label>
+      <input
+        type="text"
+        class="form-control"
+        id="event"
+        name="event"
+        [(ngModel)]="eventModel.event"
+        #event="ngModel"
+        [appAutocomplete]="autocomplete"
+        autocomplete="off"
+      />
+      <app-autocomplete #autocomplete="appAutocomplete">
+        <ng-template appAutocompleteContent>
+          <ng-container *ngIf="options | filter: event.value as result">
+            <app-option *ngFor="let option of result" [value]="option.label">
+              {{ option.label }}
+            </app-option>
+            <app-option class="no-result" *ngIf="!result.length"
+              >No result...</app-option
+            >
+          </ng-container>
+        </ng-template>
+      </app-autocomplete>
     </div>
+
     <button
       type="submit"
       class="btn btn-primary"

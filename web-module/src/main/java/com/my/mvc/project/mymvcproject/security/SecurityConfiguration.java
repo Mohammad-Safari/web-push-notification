@@ -33,7 +33,7 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder,
-            AuthenticationUserDetailService userDetailsService)
+            AuthenticationUserDetailsService userDetailsService)
             throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(userDetailsService)

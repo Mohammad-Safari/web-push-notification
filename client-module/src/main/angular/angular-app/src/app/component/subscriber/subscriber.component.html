@@ -1,23 +1,107 @@
 <div #notificationSubscriber class="noselect notification-subscriber">
   <h1>Notification subscriber</h1>
-  <div>
+  <div id="subscriber-options">
     <button
       type="button"
-      class="btn btn-primary"
-      [ngClass]="!pushEnabled ? 'disabled' : ''"
+      class="btn mb-2"
+      [ngClass]="pushEnabled === true ? 'btn-primary' : 'btn-outline-primary'"
       data-toggle="button"
       aria-pressed="false"
       autocomplete="off"
       (click)="toggleWebPush()"
-      [disabled]="!pushSupport"
+      [disabled]="pushSupport !== true"
     >
       Web Push API
     </button>
-    <label *ngIf="pushSupport == false">
-      {{'Web Push API is not supported by your browser'}}
+    <div class="event-toggle-container collapsed" #optionContainer>
+      <h3 class="ms-2 mt-1">
+        subscription options
+        <i class="bi bi-chevron-expand" (click)="collapse(optionContainer)"></i>
+      </h3>
+      <input
+        type="checkbox"
+        class="btn-check"
+        id="internal"
+        [(ngModel)]="subscribedEvents['app-notification']"
+        (ngModelChange)="subscribedEventsChange()"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-primary event-toggle" for="internal">
+        app internal
+      </label>
+
+      <input
+        type="checkbox"
+        class="btn-check"
+        id="info"
+        [(ngModel)]="subscribedEvents['server-notification']"
+        (ngModelChange)="subscribedEventsChange()"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-info event-toggle" for="info"> info </label>
+
+      <input
+        type="checkbox"
+        class="btn-check"
+        id="success"
+        [(ngModel)]="subscribedEvents['server-success']"
+        (ngModelChange)="subscribedEventsChange()"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-success event-toggle" for="success">
+        success
+      </label>
+
+      <input
+        type="checkbox"
+        class="btn-check"
+        id="action"
+        [(ngModel)]="subscribedEvents['server-action']"
+        (ngModelChange)="subscribedEventsChange()"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-danger event-toggle" for="action">
+        action needed
+      </label>
+
+      <input
+        type="checkbox"
+        class="btn-check"
+        id="warning"
+        [(ngModel)]="subscribedEvents['server-warning']"
+        (ngModelChange)="subscribedEventsChange()"
+        autocomplete="off"
+      />
+      <label class="btn btn-outline-warning event-toggle" for="warning">
+        warning
+      </label>
+      <div>
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="custom"
+          [(ngModel)]="subscribedEvents['custom']"
+          (ngModelChange)="subscribedEventsChange()"
+          autocomplete="off"
+        />
+        <label class="btn btn-outline-dark event-toggle" for="custom">
+          custom event
+        </label>
+        <input
+          [disabled]="subscribedEvents['custom'] !== true"
+          class="form-control custom-input"
+          type="text"
+          [(ngModel)]="customEvent"
+          (ngModelChange)="subscribedEventsChange()"
+          #custom="ngModel"
+        />
+      </div>
+    </div>
+    <label *ngIf="pushSupport === false">
+      {{ "Web Push API is not supported by your browser" }}
     </label>
     <label *ngIf="pushSupport === true && pushGranted === false">
-      {{'Web Push API is blocked from browser for this site'}}
+      {{ "Web Push API is blocked from browser for this site" }}
     </label>
   </div>
 </div>

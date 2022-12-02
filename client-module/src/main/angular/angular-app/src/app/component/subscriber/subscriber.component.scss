@@ -1,9 +1,58 @@
 * {
-  padding: 5px;
   overflow: hidden;
 }
+/** collapsing styles **/
+#subscriber-options {
+  position: relative;
+}
+.collapsed {
+  max-height: 65px;
+}
+.collapsed:after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 20px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+}
+.collapsed:hover {
+  max-height: 500px;
+}
+.collapsed:hover:after {
+  background-image: none;
+  z-index: -100;
+}
+/** collapsing styles **/
+
+.event-toggle-container {
+  background-color: rgb(239, 244, 245);
+  transition: max-height 500ms ease-in-out;
+  border-radius: 4px;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+.event-toggle {
+  width: 20%;
+  margin: 3px;
+  height: 35px;
+  font-size: small;
+  text-overflow: ellipsis;
+}
+.custom-input {
+  display: inline;
+  width: 25%;
+  margin: 3px;
+  height: 25px;
+  font-size: small;
+}
 .message-box {
-  width:100%;
+  width: 100%;
+  padding: 15px;
   background-color: #f5f5f5;
   border: 1px solid #e5e5e5;
   border-radius: 7px;
@@ -12,16 +61,40 @@
   margin-bottom: 20px;
 }
 .app-notification {
-  background-color: #00ccaa93;
-  border: 2px solid #009fb7;
+  background-color: #0d6efd;
+  border: 2px solid #0d6efd94;
   border-radius: 3px;
   box-shadow: 0 7px 7px rgba(0, 9, 131, 0.14);
   margin-top: 0;
   padding: 5px;
 }
 .server-notification {
-  background-color: #ffc40094;
-  border: 2px solid #ffcd61;
+  background-color: #0dcaf0;
+  border: 2px solid #0dcaf094;
+  border-radius: 3px;
+  box-shadow: 0 7px 7px rgba(131, 0, 0, 0.14);
+  margin-top: 0;
+  padding: 15px;
+}
+.server-success {
+  background-color: #198754;
+  border: 2px solid #19875494;
+  border-radius: 3px;
+  box-shadow: 0 7px 7px rgba(131, 0, 0, 0.14);
+  margin-top: 0;
+  padding: 15px;
+}
+.server-action {
+  background-color: #dc3545;
+  border: 2px solid #dc354594;
+  border-radius: 3px;
+  box-shadow: 0 7px 7px rgba(131, 0, 0, 0.14);
+  margin-top: 0;
+  padding: 15px;
+}
+.server-warning {
+  background-color: #ffc400;
+  border: 2px solid #ffcd6194;
   border-radius: 3px;
   box-shadow: 0 7px 7px rgba(131, 0, 0, 0.14);
   margin-top: 0;
