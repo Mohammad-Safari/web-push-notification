@@ -8,9 +8,9 @@ public enum UserType {
     USER("user"),
     GUEST("guest");
 
-    private String type;
+    private String value;
 
-    UserType(String type) {
-        this.type = type;
+    UserType(String value) {
+        this.value = value;
     }
 }
