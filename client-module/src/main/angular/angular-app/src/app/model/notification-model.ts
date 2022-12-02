@@ -1,7 +1,8 @@
-export class NotificationModel<T> {
-  data: T;
+// subscription model according to sse protocol standards
+export class NotificationModel {
+  data: string;
   name: string;
-  constructor(data: T, name: string) {
+  constructor(data: string, name: string) {
     this.data = data;
     this.name = name;
   }

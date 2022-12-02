@@ -26,7 +26,7 @@ export class PublisherComponent implements OnDestroy {
   @ViewChild('notificationPublisher')
   publisherContainer: ElementRef<HTMLDivElement>;
   @Input()
-  appInternalNotifier = new Subject<NotificationModel<string>>();
+  appInternalNotifier = new Subject<NotificationModel>();
   private _unsubscribed = new Subject<never>();
   options = [
     'server-notification' /* info */,

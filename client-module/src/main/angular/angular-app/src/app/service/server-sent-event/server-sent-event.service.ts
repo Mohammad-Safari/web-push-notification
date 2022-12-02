@@ -176,8 +176,8 @@ export class ServerSentEventService<T> implements Subscriber<T>, OnDestroy {
    * Html5 Web Push API publisher Utility
    * @param notification
    */
-  static async webPushApiTrigger<K extends { toString: () => string }>(
-    notification: NotificationModel<K>,
+  static async webPushApiTrigger(
+    notification: NotificationModel,
     options?: { selfDestroy: boolean }
   ) {
     const standardNotification = new Notification('Notification', {

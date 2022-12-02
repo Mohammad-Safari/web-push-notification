@@ -38,7 +38,7 @@ import { RESOLVER_ENDPOINT, UserUuidResolverService } from 'src/app/service/user
   ],
 })
 export class ThirdPartyNotificationComponent {
-  public publisherNotification: NotificationModel<string>;
+  public publisherNotification: NotificationModel;
 
   // constructor(
   //   service1: Subscriber,
@@ -49,7 +49,7 @@ export class ThirdPartyNotificationComponent {
   //   @Inject(RESOLVER_ENDPOINT) url3: string
   // ) {}
 
-  public notify(notification: NotificationModel<string>) {
+  public notify(notification: NotificationModel) {
     this.publisherNotification = notification;
   }
 }
