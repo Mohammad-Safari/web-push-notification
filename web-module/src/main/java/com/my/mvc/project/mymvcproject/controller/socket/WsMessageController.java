@@ -6,6 +6,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.mvc.project.mymvcproject.context.RequestContext;
 import com.my.mvc.project.mymvcproject.dto.EventDto;
 import com.my.mvc.project.mymvcproject.model.Event;
+import com.my.mvc.project.mymvcproject.model.User;
 import com.my.mvc.project.mymvcproject.service.EventService;
 import com.my.mvc.project.mymvcproject.service.UserService;
 
@@ -32,7 +35,7 @@ public class WsMessageController extends TextWebSocketHandler {
     private final ObjectMapper mapper;
     private final UserService userService;
     private final EventService eventService;
-    private final RequestContext requestContext;
+    // private final RequestContext requestContext;
 
     List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
@@ -50,7 +53,8 @@ public class WsMessageController extends TextWebSocketHandler {
             throws InterruptedException, IOException {
         getOpenWebSockets().forEach(webSocketSession -> {
             try {
-                var eventDto = mapper.readValue(message.getPayload(), new TypeReference<EventDto>() {});
+                var eventDto = mapper.readValue(message.getPayload(), new TypeReference<EventDto>() {
+                });
                 handleClientEvent(eventDto);
                 log.info("event deserialized from websocket channel");
             } catch (IOException e) {
@@ -62,8 +66,8 @@ public class WsMessageController extends TextWebSocketHandler {
 
     private void handleClientEvent(EventDto dto) {
         var event = Event.builder()
-                .sender(userService.getByUsername2(requestContext.getUserContext().getUsername()))
-                .receiver(userService.getByUsername2(dto.getReceiver()))
+                .sender(/* userService.getByUsername2(requestContext.getUserContext().getUsername()) */ new User())
+                .receiver(/* userService.getByUsername2(dto.getReceiver()) */ new User())
                 .data(dto.getData())
                 .name(dto.getName()).build();
         eventService.publishCustomEvent(event);
