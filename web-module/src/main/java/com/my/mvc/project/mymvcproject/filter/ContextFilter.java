@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.my.mvc.project.mymvcproject.context.RequestContext;
-import com.my.mvc.project.mymvcproject.util.CookieUtil;
 
 import lombok.AllArgsConstructor;
 

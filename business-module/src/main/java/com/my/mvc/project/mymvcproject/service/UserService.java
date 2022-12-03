@@ -22,16 +22,15 @@ public class UserService {
     UserDetailsRepository userDetailsRepository;
 
     // @Cacheable(value = "id")
-    public UserDetails getUserDetails(long id) throws UserNotValidException, UserNotRegisteredDetailsException {
+    public UserDetails getUserDetails(Long id) throws UserNotValidException, UserNotRegisteredDetailsException {
         var userQuery = userRepository.findById(id);
-        // broken
-        var detailQuery = userDetailsRepository.findById(id);
-        if (detailQuery.isEmpty() || userQuery.isEmpty()) {
+        if (userQuery.isEmpty()) {
             throw new UserNotRegisteredDetailsException();
         }
+        var detailQuery = userDetailsRepository.findByUser(userQuery.get()).stream().findFirst();
         var foundUser = userQuery.get();
         var foundDetail = detailQuery.get();
-        if (foundUser.getUserType() != UserType.USER) {
+        if (foundUser.getUserType() == UserType.GUEST) {
             throw new UserNotRegisteredDetailsException();
         }
         return foundDetail;
