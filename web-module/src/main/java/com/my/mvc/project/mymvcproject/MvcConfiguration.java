@@ -1,16 +1,17 @@
 package com.my.mvc.project.mymvcproject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class MvcConfiguration implements WebMvcConfigurer {
@@ -31,16 +32,18 @@ public class MvcConfiguration implements WebMvcConfigurer {
                                 });
         }
 
-        // @Bean
-        // public DefaultCookieSerializerCustomizer defaultCookieSerializer() {
-        // DefaultCookieSerializerCustomizer defaultCookieSerializer = (
-        // DefaultCookieSerializer cookieSerializer) -> {
-        // cookieSerializer.setCookieName("SESSIONID");
-        // cookieSerializer.setCookiePath("/");
-        // cookieSerializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
-        // };
-        // return defaultCookieSerializer;
-        // }
+        /**
+         * servlet 3.1 async support, task executer configuration
+         */
+        @Override
+        public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+                final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+                executor.setCorePoolSize(1);
+                executor.setMaxPoolSize(10);
+                executor.setThreadNamePrefix("mvc-task-executor-srv");
+                executor.initialize();
+                configurer.setTaskExecutor(executor);
+        }
 
         /**
          * this bean leads to async task executing while listening to event
@@ -48,7 +51,10 @@ public class MvcConfiguration implements WebMvcConfigurer {
          */
         @Bean
         public SimpleAsyncTaskExecutor getSimpleAsyncTaskExecutor() {
-                return new SimpleAsyncTaskExecutor();
+                final SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+                executor.setConcurrencyLimit(10);
+                executor.setThreadNamePrefix("event-task-executor-ev");
+                return executor;
         }
 
         @Bean(name = "applicationEventMulticaster")
