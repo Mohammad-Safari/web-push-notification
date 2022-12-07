@@ -7,7 +7,7 @@ import { SocketCommunicationService } from 'src/app/service/socket-communication
 const injectionToken = new InjectionToken<
   SocketCommunicationService<NotificationModel | EventModel>
 >('', {
-  factory: () => new SocketCommunicationService('wss://127.0.0.1:8443/socket'),
+  factory: () => new SocketCommunicationService('wss://spring-mvc:8443/socket'),
 });
 @Component({
   selector: 'app-realtime-messaging',

@@ -1,3 +1,3 @@
-GET  http://localhost:8080/event/notification/subscribe HTTP/1.1
+GET  http://spring-mvc:8080/event/notification/subscribe HTTP/1.1
 Accept: text/event-stream
 Transfer-Encoding: chunked

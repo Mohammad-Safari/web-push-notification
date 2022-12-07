@@ -5,6 +5,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PushServerConfiguration {
-    @Value("${thirdparty.push-server.url}")
+    @Value("${third-party.push-server.url}")
     String PUSH_SERVER_URL;
 }
