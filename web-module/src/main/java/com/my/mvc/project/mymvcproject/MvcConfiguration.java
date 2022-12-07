@@ -1,6 +1,5 @@
 package com.my.mvc.project.mymvcproject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -69,11 +68,6 @@ public class MvcConfiguration implements WebMvcConfigurer {
         @Scope(value = "prototype")
         public SseEmitter getSseEmitter() {
                 return new SseEmitter();
-        }
-
-        @Bean
-        public ObjectMapper getMapper() {
-                return new ObjectMapper();
         }
 
 }

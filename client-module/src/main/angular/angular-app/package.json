@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --hmr --proxy-config proxy.conf.json --host 127.0.0.1 --ssl true ",
+    "start": "ng serve --hmr --proxy-config proxy.conf.json --host spring-mvc --ssl true ",
     "build": "ng build",
     "watch": "ng build --watch --vendor-chunk --named-chunks --configuration development --output-path ../../../../target/classes/angular-app",
     "test": "ng test",

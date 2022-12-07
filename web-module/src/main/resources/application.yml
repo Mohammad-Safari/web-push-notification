@@ -1,5 +1,8 @@
 ## tomcat
 server:
+  address: spring-mvc
+  # servlet:
+  #   context-path: /angular-app
   http2:
     enabled: true
   port: 8443
@@ -11,27 +14,49 @@ server:
     key-store-password: spring-mvc
     key-store-type: PKCS12
     key-alias: spring-mvc
-### cache
+
+management:
+  address: spring-mvc
+  server:
+    port: 8081
+    ssl:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 spring:
+  application:
+    name: spring-mvc
+    
+  ### spring-boot admin
+  boot:
+    admin:
+      context-path: /admin
+      client:
+        url: https://spring-mvc:8443/admin 
+      monitor:
+        default-timeout: 60000
+        status-interval: 15000
+        status-lifetime: 15000
+
+  ### cache
   redis:
     host: 192.168.7.217
-    ## Port of redis server.
     port: 30353
-    ## Redis username
     username: admin
-    ## Redis password
     password: admin
-    ## Redis data base id of project and defined redis user
     database: 12
 
   ### database
-  ## h2
   datasource:
     # initialization-mode: always
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
     username: sa
     password:
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
@@ -41,6 +66,7 @@ spring:
     ## Initialize using schema.sql and data.sql for non embedded relational db
     # ddl-auto: none
     ## If we still want to have both Hibernate automatic schema generation in conjugation with script-based schema creation and data population, we'll have to use:
+
   h2:
     console:
       enabled: true
@@ -51,6 +77,6 @@ spring:
 jwt:
   secret: asdjadkahksjdakkjfvnd
 
-thirdparty:
+third-party:
   push-server:
     url: https://192.168.74.95:8443/sse/notification/
