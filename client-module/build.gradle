@@ -9,3 +9,33 @@ plugins {
 }
 
 description = 'client-module'
+
+def angularAppDir = "$projectDir/src/main/angular/angular-app"
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["$angularAppDir/dist", "$projectDir/src/main/resources"]
+        }
+    }
+}
+
+processResources {
+    dependsOn "buildAngular"
+}
+
+task buildAngular(type: Exec) {
+    dependsOn "installDependencies"
+    workingDir "$angularAppDir"
+    inputs.dir "$angularAppDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine "npm.cmd", "run", "build"
+}
+
+task installDependencies(type: Exec) {
+    workingDir "$angularAppDir"
+    inputs.dir "$angularAppDir"
+    group = BasePlugin.BUILD_GROUP
+    commandLine "npm.cmd", "install"
+
+}
