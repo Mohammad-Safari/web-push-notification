@@ -1,4 +1,4 @@
-POST  http://localhost:8080/api/notification/publish HTTP/1.1
+POST  http://spring-mvc:8080/api/notification/publish HTTP/1.1
 Authorization: CUSTOM-AUTH eyJ1c2VybmFtZSI6ImFzZCIsImVtYWlsIjpudWxsfQ==
 Content-Type: application/json
 

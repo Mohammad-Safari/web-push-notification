@@ -13,14 +13,14 @@ export class LoginService {
   constructor(private httpClient: HttpClient) {}
   login(loginModel: LoginModel) {
     return this.httpClient
-      .post('/api/login', loginModel, { observe: 'response' })
+      .post<{ [key: string]: string }>('/api/login', loginModel, {
+        observe: 'response',
+      })
       .pipe(
-        map((data: HttpResponse<any>) => {
+        map((data: HttpResponse<{ [key: string]: string }>) => {
           localStorage.setItem(
             'Authorization',
-            data.headers.get('Authorization') ??
-              data.body['Authorization'] ??
-              ''
+            data.headers.get('Authorization') ?? data.body?.Authorization ?? ''
           );
         }),
         tap(() => {
@@ -31,17 +31,15 @@ export class LoginService {
   }
 
   logout() {
-    return this.httpClient
-      .get('/api/logout', { observe: 'response' })
-      .pipe(
-        map((data: HttpResponse<any>) => {
-          localStorage.removeItem('Authorization');
-        }),
-        tap(() => {
-          this._isAuthenticated = false;
-          this.loginObservable.next(null);
-        })
-      );
+    return this.httpClient.get('/api/logout', { observe: 'response' }).pipe(
+      map(() => {
+        localStorage.removeItem('Authorization');
+      }),
+      tap(() => {
+        this._isAuthenticated = false;
+        this.loginObservable.next(null);
+      })
+    );
   }
 
   public isAuthenticated(): boolean {
@@ -55,12 +53,31 @@ export class LoginService {
       throw Error('user is not authenticated');
     }
     let token = localStorage.getItem('Authorization') ?? '';
-    token = token?.substring('CUSTOM-AUTH '.length);
-    if (!token || !JSON.parse(atob(token))) {
-      throw Error('token is corrupted');
+    if (!token) {
+      throw Error('token is missing');
     }
-    const username = JSON.parse(atob(token))['username'];
-    this.loginObservable.next(username);
-    return username;
+    token = token.substring('CUSTOM-AUTH '.length).split('.')[1];
+    if (!token) {
+      localStorage.removeItem('Authorization');
+      document.cookie = '';
+      throw Error(
+        'token is in wrong format(token is now removed from all storages)'
+      );
+    }
+    let username = undefined;
+    try {
+      username = JSON.parse(atob(token))?.sub;
+    } catch (e) {
+      localStorage.removeItem('Authorization');
+      document.cookie = '';
+      throw Error(
+        'token is corrupted(token is now removed  from all storages)'
+      );
+    }
+    if (username) {
+      this.loginObservable.next(username);
+      return username;
+    }
+    throw Error('token data is missing');
   }
 }

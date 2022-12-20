@@ -1,13 +1,9 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { NotificationModel } from 'src/app/model/notification';
-import {
-  EventPublisherService,
-  PUBLSHER_ENDPOINT
-} from 'src/app/service/event-publisher/event-publisher.service';
-import {
-  ServerSentEventService,
-  SUBSCRIBER_ENDPOINT
-} from 'src/app/service/server-sent-event/server-sent-event.service';
+import { Component } from '@angular/core';
+import { NotificationModel } from 'src/app/model/notification-model';
+import { EventPublisherService } from 'src/app/service/event-publisher/event-publisher.service';
+import { Publisher, PUBLSHER_ENDPOINT } from 'src/app/service/interface/publisher';
+import { Subscriber, SUBSCRIBER_ENDPOINT } from 'src/app/service/interface/subscriber';
+import { ServerSentEventService } from 'src/app/service/server-sent-event/server-sent-event.service';
 import { RESOLVER_ENDPOINT, UserUuidResolverService } from 'src/app/service/user-uuid-resolver/user-uuid-resolver.service';
 
 @Component({
@@ -28,11 +24,11 @@ import { RESOLVER_ENDPOINT, UserUuidResolverService } from 'src/app/service/user
       useValue: '/api/thirdparty/getSubscriptionUrl',
     },
     {
-      provide: ServerSentEventService,
+      provide: Subscriber,
       useClass: ServerSentEventService,
     },
     {
-      provide: EventPublisherService,
+      provide: Publisher,
       useClass: EventPublisherService,
     },
     {
@@ -41,19 +37,17 @@ import { RESOLVER_ENDPOINT, UserUuidResolverService } from 'src/app/service/user
     },
   ],
 })
-export class ThirdPartyNotificationComponent implements OnInit {
+export class ThirdPartyNotificationComponent {
   public publisherNotification: NotificationModel;
 
-  constructor(
-    service1: EventPublisherService,
-    service2: ServerSentEventService,
-    service3: UserUuidResolverService,
-    @Inject(PUBLSHER_ENDPOINT) url1: string,
-    @Inject(SUBSCRIBER_ENDPOINT) url2: string,
-    @Inject(RESOLVER_ENDPOINT) url3: string
-  ) {}
-
-  ngOnInit(): void {}
+  // constructor(
+  //   service1: Subscriber,
+  //   service2: Publisher,
+  //   service3: UserUuidResolverService,
+  //   @Inject(PUBLSHER_ENDPOINT) url1: string,
+  //   @Inject(SUBSCRIBER_ENDPOINT) url2: string,
+  //   @Inject(RESOLVER_ENDPOINT) url3: string
+  // ) {}
 
   public notify(notification: NotificationModel) {
     this.publisherNotification = notification;

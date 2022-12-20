@@ -12,7 +12,7 @@ import com.my.mvc.project.mymvcproject.util.CookieUtil;
 
 import lombok.AllArgsConstructor;
 
-@Controller()
+@Controller
 @AllArgsConstructor
 public class IndexController {
     private CookieUtil cookieUtil;

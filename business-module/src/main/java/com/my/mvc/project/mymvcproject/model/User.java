@@ -1,6 +1,5 @@
 package com.my.mvc.project.mymvcproject.model;
 
-import java.time.Instant;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -28,7 +27,7 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  private Date createdTime = Date.from(Instant.now());
+  private Date createdTime;
   private Date updatedTime;
   @Enumerated(EnumType.STRING)
   private UserType userType;
