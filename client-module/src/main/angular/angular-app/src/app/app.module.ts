@@ -20,6 +20,7 @@ import { SignupComponent } from './page/signup/signup.component';
 import { SocketMessagingComponent } from './page/socket-messaging/socket-messaging.component';
 import { ThirdPartyNotificationComponent } from './page/third-party-notification/third-party-notification.component';
 import { FilterPipe } from './pipe/filter.pipe';
+import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { FilterPipe } from './pipe/filter.pipe';
     AutocompleteDirective,
     FilterPipe,
     SocketMessagingComponent,
+    NavigationBarComponent,
   ],
   imports: [
     BrowserModule,
