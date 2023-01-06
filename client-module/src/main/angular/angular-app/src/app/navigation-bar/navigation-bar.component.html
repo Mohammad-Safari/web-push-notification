@@ -1,0 +1,55 @@
+<section class="card bg-dark my-5">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark container-fluid">
+    <a class="navbar-brand" href="#" role="button">app navigation</a>
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li
+        *ngFor="let navigation of NAVIGATIONS"
+        [ngClass]="!!navigation.subNavigation?'dropdown':''"
+        class="nav-item"
+        cdkOverlayOrigin
+        #trigger="cdkOverlayOrigin"
+        (mouseenter)="openSubNavigation(item, 'open')"
+        (click)="toggleNavigationItem(item, 'open')"
+        #item
+      >
+        <ng-container *ngIf="!!navigation.route; else subNavigation">
+          <a
+            [routerLink]="navigation.route"
+            >{{navigation.title}}</a
+          >
+        </ng-container>
+        <ng-template #subNavigation>
+          <a class="nav-link dropdown-toggle">{{navigation.title}}</a>
+        </ng-template>
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="trigger"
+          [cdkConnectedOverlayOpen]="item.hasAttribute('open')"
+          [cdkConnectedOverlayPositions]="POSITIONS"
+        >
+          <ul
+            *ngIf="!!navigation.subNavigation"
+            id="dropdown-menu"
+            class="dropdown-menu dropdown-menu-dark d-block"
+            (mouseleave)="item.removeAttribute('open')"
+          >
+            <li
+              *ngFor="let subNavigation of navigation.subNavigation"
+              class="list-item mt-1"
+            >
+              <a
+                *ngIf="!!subNavigation.route"
+                [routerLink]="subNavigation.route"
+                class="dropdown-item"
+                >{{subNavigation.title}}</a
+              >
+            </li>
+          </ul>
+        </ng-template>
+      </li>
+    </ul>
+    <h4 class="d-flex text-white py-1" *ngIf="name">
+      hi {{ name }}
+    </h4>
+  </nav>
+</section>

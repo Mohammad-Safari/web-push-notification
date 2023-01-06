@@ -1,38 +1,8 @@
-<div class="container">
+<section class="container">
   <div class="row">
     <div class="col-md-12">
-      <div class="card bg-dark my-5">
-        <div class="card-body">
-          <h2 class="card-title text-center text-white py-1">{{ title }}</h2>
-          <h3 class="card-title text-center text-white py-1" *ngIf="name">
-            hi {{ name }}
-          </h3>
-          <ul class="text-center list-inline py-1">
-            <li class="list-inline-item">
-              <a routerLink="/signup" class="btn btn-info">Sign Up</a>
-            </li>
-            <li class="list-inline-item">
-              <a routerLink="/login" class="btn btn-info">Login</a>
-            </li>
-            <li class="list-inline-item">
-              <a routerLink="/notification" class="btn btn-info"
-                >Notification</a
-              >
-            </li>
-            <li class="list-inline-item">
-              <a routerLink="/notification3rdp" class="btn btn-info"
-                >3rd Party Notification</a
-              >
-            </li>
-            <li class="list-inline-item">
-              <a routerLink="/messaging" class="btn btn-info"
-                >socket messaging</a
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
+      <app-navigation-bar [title]="title" [name]="name"></app-navigation-bar>
       <router-outlet></router-outlet>
     </div>
   </div>
-</div>
+</section>
