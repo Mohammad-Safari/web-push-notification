@@ -21,6 +21,7 @@ import { SocketMessagingComponent } from './page/socket-messaging/socket-messagi
 import { ThirdPartyNotificationComponent } from './page/third-party-notification/third-party-notification.component';
 import { FilterPipe } from './pipe/filter.pipe';
 import { NavigationBarComponent } from './navigation-bar/navigation-bar.component';
+import { MobileNavigationBarComponent } from './component/mobile-navigation-bar/mobile-navigation-bar.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { NavigationBarComponent } from './navigation-bar/navigation-bar.componen
     FilterPipe,
     SocketMessagingComponent,
     NavigationBarComponent,
+    MobileNavigationBarComponent,
   ],
   imports: [
     BrowserModule,
