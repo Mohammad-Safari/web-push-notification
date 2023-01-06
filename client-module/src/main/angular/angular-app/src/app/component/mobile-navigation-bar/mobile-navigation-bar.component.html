@@ -1,0 +1,13 @@
+<section class="container-fluid">
+  <nav
+    class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark card m-2 mt-0 d-block"
+  >
+    <ul class="navbar-nav flex-row justify-content-evenly">
+      <li *ngFor="let navigation of NAVIGATIONS" class="nav-item">
+        <a class="nav-link p-2" [routerLink]="navigation.route" role="button"
+          ><i [ngClass]="navigation.icon"></i
+        ></a>
+      </li>
+    </ul>
+  </nav>
+</section>
