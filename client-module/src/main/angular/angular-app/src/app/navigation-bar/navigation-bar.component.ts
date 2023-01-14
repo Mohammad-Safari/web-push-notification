@@ -31,7 +31,7 @@ export class NavigationBarComponent {
       subNavigation: [
         { title: 'Notification', route: '/notification' },
         { title: '3rd Party Notification', route: '/notification3rdp' },
-        { title: 'socket messaging', route: '/messaging' },
+        { title: 'Socket Messaging', route: '/messaging' },
       ],
     },
   ];

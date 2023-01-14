@@ -20,7 +20,7 @@ export class MobileNavigationBarComponent {
     },
     {
       icon: 'bi bi-house',
-      route: '#',
+      route: '',
       alt: 'Home',
     },
     {
