@@ -27,7 +27,11 @@ management:
 spring:
   application:
     name: spring-mvc
-    
+  devtools:
+    restart:
+      enabled: false
+      additional-exclude: angular-app/**
+
   ### spring-boot admin
   boot:
     admin:
@@ -41,11 +45,11 @@ spring:
 
   ### cache
   redis:
-    host: 192.168.7.217
-    port: 30353
-    username: admin
-    password: admin
-    database: 12
+     host: 192.168.7.217
+     port: 30353
+     username: admin
+     password: admin
+     database: 12
 
   ### database
   datasource:
