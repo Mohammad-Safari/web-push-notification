@@ -24,6 +24,7 @@ import { NavigationBarComponent } from './navigation-bar/navigation-bar.componen
 import { MobileNavigationBarComponent } from './component/mobile-navigation-bar/mobile-navigation-bar.component';
 import { BriefMenuComponent } from './component/breif-menu/brief-menu.component';
 import { HomeComponent } from './component/home/home.component';
+import { ProfileComponent } from './component/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { HomeComponent } from './component/home/home.component';
     MobileNavigationBarComponent,
     BriefMenuComponent,
     HomeComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
