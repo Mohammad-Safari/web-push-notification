@@ -1,4 +1,4 @@
-package com.my.mvc.project.mymvcproject.filter;
+package com.my.mvc.project.mymvcproject.context;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;

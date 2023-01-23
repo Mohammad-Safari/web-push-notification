@@ -17,7 +17,7 @@ import lombok.Data;
 public class Event<T> {
     @ManyToOne()
     private User receiver;
-    @ManyToOne()
+    @ManyToOne
     private User sender;
     @Id
     private String id;
