@@ -1,4 +1,4 @@
-## tomcat
+# tomcat
 server:
   address: spring-mvc
   # servlet:
@@ -13,6 +13,7 @@ server:
     key-store-type: PKCS12
     key-alias: spring-mvc
 
+# management
 management:
   address: spring-mvc
   server:
@@ -24,9 +25,17 @@ management:
       exposure:
         include: "*"
 
+# spring
 spring:
+
   application:
     name: spring-mvc
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  ### devtools
   devtools:
     restart:
       enabled: false
@@ -45,38 +54,34 @@ spring:
 
   ### cache
   redis:
-     host: 192.168.7.217
-     port: 30353
-     username: admin
-     password: admin
-     database: 12
+    host: spring-mvc
+    port: 30353
+    username: admin
+    password: admin
+    database: 12
 
   ### database
   datasource:
-    # initialization-mode: always
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
-    username: sa
+    username: project
     password:
 
+  ### persistent api
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
-    # hibernate:
-    ## Initialize data using JPA and Hibernate
-    # ddl-auto: create
-    ## Initialize using schema.sql and data.sql for non embedded relational db
-    # ddl-auto: none
-    ## If we still want to have both Hibernate automatic schema generation in conjugation with script-based schema creation and data population, we'll have to use:
 
+  ### dev database
   h2:
     console:
       enabled: true
 
+  ### renderer
   thymeleaf:
     cache: false
 
-### logback
+# logback
 logging:
   file:
     name: /var/log/project/spring-mvc.log
@@ -88,9 +93,11 @@ logging:
     org.springframework: INFO
     org.apache: ERROR
 
+# jwt configuration
 jwt:
   secret: changeit
 
+# third party services configuration
 third-party:
   push-server:
-    url: https://192.168.74.95:8443/sse/notification/
+    url: https://third-party:8443/sse/notification/
