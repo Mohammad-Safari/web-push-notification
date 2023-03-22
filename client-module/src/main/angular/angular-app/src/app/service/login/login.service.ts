@@ -1,6 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { LoginModel } from '../../model/login-model';
 
@@ -10,8 +10,13 @@ import { LoginModel } from '../../model/login-model';
 export class LoginService {
   public loginObservable = new BehaviorSubject<string | null>(null);
   private _isAuthenticated = false;
+
   constructor(private httpClient: HttpClient) {}
+
   login(loginModel: LoginModel) {
+    if (typeof localStorage == 'undefined') {
+      return new Observable();
+    }
     return this.httpClient
       .post<{ [key: string]: string }>('/api/login', loginModel, {
         observe: 'response',
@@ -31,6 +36,9 @@ export class LoginService {
   }
 
   logout() {
+    if (typeof localStorage == 'undefined') {
+      return new Observable();
+    }
     return this.httpClient.get('/api/logout', { observe: 'response' }).pipe(
       map(() => {
         localStorage.removeItem('Authorization');
@@ -43,8 +51,12 @@ export class LoginService {
   }
 
   public isAuthenticated(): boolean {
+    if (typeof localStorage == 'undefined') {
+      return false;
+    }
     return (
-      this._isAuthenticated || localStorage.getItem('Authorization') != null
+      this._isAuthenticated ||
+      (localStorage as any).getItem('Authorization') != null
     );
   }
 
